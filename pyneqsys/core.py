@@ -43,10 +43,10 @@ def _ensure_3args(func):
 
 class _NeqSysBase(object):
 
-    def __init__(self, names=None, param_names=None, x_by_name=None, par_by_name=None):
+    def __init__(self, names=None, param_names=None, var_by_name=None, par_by_name=None):
         self.names = names
         self.param_names = param_names
-        self.x_by_name = x_by_name
+        self.var_by_name = var_by_name
         self.par_by_name = par_by_name
 
     def _get_solver_cb(self, solver, attached_solver):
@@ -95,6 +95,7 @@ class _NeqSysBase(object):
             Use last successful solution as ``x0`` in consecutive solves.
         \*\*kwargs:
             Keyword arguments pass along to :meth:`solve`.
+
         """
         new_params = np.atleast_1d(np.array(params, dtype=np.float64))
         xout = np.empty((len(varied_data), len(x0)))
@@ -252,7 +253,7 @@ class NeqSys(_NeqSysBase):
     def pre_process(self, x0, params=()):
         """ Used internally for transformation of variables """
         # Should be used by all methods matching "solve_*"
-        if self.x_by_name:
+        if self.var_by_name:
             x0 = [x0[k] for k in self.names]
         if self.par_by_name:
             params = [params[k] for k in self.param_names]
@@ -448,7 +449,7 @@ generated/scipy.optimize.root.html
         import warnings
         from ipopt import minimize_ipopt
         warnings.warn("ipopt interface untested at the moment")
-        return minimize_ipopt(self.f_callback, intern_x0, jac=self.j_callback)
+        return minimize_ipopt(self.f_callback, intern_x0, jac=self.j_callback, **kwargs)
 
     def _solve_levmar(self, intern_x0, tol=1e-8, **kwargs):
         import warnings
