@@ -1,0 +1,917 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyneqsys.core &mdash; pyneqsys 0.5.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="pyneqsys 0.5.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> pyneqsys
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyneqsys.html">pyneqsys package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pyneqsys</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyneqsys.core</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyneqsys.core</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">.plotting</span> <span class="k">import</span> <span class="n">plot_series</span>
+
+<span class="n">LRU_CACHE_SIZE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;PYNEQSYS_LRU_CACHE_SIZE&#39;</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">fastcache</span> <span class="k">import</span> <span class="n">clru_cache</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Could not import &#39;fastcache&#39; (look in PyPI), &quot;</span>
+                  <span class="s2">&quot;solving of ConditionalNeqSys may be slower.&quot;</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">clru_cache</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">fun</span>
+
+
+<span class="k">def</span> <span class="nf">_ensure_3args</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">self_arg</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span><span class="p">(</span><span class="n">func</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getargspec</span><span class="p">(</span><span class="n">func</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">3</span> <span class="o">+</span> <span class="n">self_arg</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">func</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getargspec</span><span class="p">(</span><span class="n">func</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">self_arg</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">backend</span><span class="o">=</span><span class="n">math</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getargspec</span><span class="p">(</span><span class="n">func</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">self_arg</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">backend</span><span class="o">=</span><span class="n">math</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Incorrect numer of arguments&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_NeqSysBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">param_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x_by_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">par_by_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">latex_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">latex_param_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">names</span> <span class="ow">or</span> <span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span> <span class="o">=</span> <span class="n">param_names</span> <span class="ow">or</span> <span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_by_name</span> <span class="o">=</span> <span class="n">x_by_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">par_by_name</span> <span class="o">=</span> <span class="n">par_by_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latex_names</span> <span class="o">=</span> <span class="n">latex_names</span> <span class="ow">or</span> <span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latex_param_names</span> <span class="o">=</span> <span class="n">latex_param_names</span> <span class="ow">or</span> <span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_solver_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">,</span> <span class="n">attached_solver</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">attached_solver</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">solver</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;solver must be None.&quot;</span><span class="p">)</span>
+            <span class="n">solver</span> <span class="o">=</span> <span class="n">attached_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">solver</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">solver</span>
+        <span class="k">if</span> <span class="n">solver</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">solver</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;PYNEQSYS_SOLVER&#39;</span><span class="p">,</span> <span class="s1">&#39;scipy&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_solve_&#39;</span> <span class="o">+</span> <span class="n">solver</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">rms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">()):</span>
+        <span class="sd">&quot;&quot;&quot; Returns root means square value of f(x, params) &quot;&quot;&quot;</span>
+        <span class="n">internal_x</span><span class="p">,</span> <span class="n">internal_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+                                                       <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">internal_params</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Parameters should be constant.&quot;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">internal_x</span><span class="o">.</span><span class="n">size</span><span class="o">//</span><span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">internal_x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f_cb</span><span class="p">(</span>
+                <span class="n">internal_x</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:],</span> <span class="n">internal_params</span><span class="p">))))</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">solve_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">varied_data</span><span class="p">,</span> <span class="n">varied_idx</span><span class="p">,</span>
+                     <span class="n">internal_x0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">propagate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Solve system for a set of parameters in which one is varied</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x0 : array_like</span>
+<span class="sd">            Guess (subject to ``self.post_processors``)</span>
+<span class="sd">        params : array_like</span>
+<span class="sd">            Parameter values</span>
+<span class="sd">        vaired_data : array_like</span>
+<span class="sd">            numerical values of the varied parameter</span>
+<span class="sd">        varied_idx : int or str</span>
+<span class="sd">            Index of the varied parameter (indexing starts at 0).</span>
+<span class="sd">            If ``self.par_by_name`` this should be the name (str) of the varied</span>
+<span class="sd">            parameter.</span>
+<span class="sd">        internal_x0 : array_like (default: None)</span>
+<span class="sd">            Guess (*not* subject to ``self.post_processors``).</span>
+<span class="sd">            Overrides ``x0`` when given.</span>
+<span class="sd">        solver : str or callback</span>
+<span class="sd">            See :meth:`solve`.</span>
+<span class="sd">        propagate : bool (default: True)</span>
+<span class="sd">            Use last successful solution as ``x0`` in consecutive solves.</span>
+<span class="sd">        \*\*kwargs:</span>
+<span class="sd">            Keyword arguments pass along to :meth:`solve`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_by_name</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">x0</span> <span class="o">=</span> <span class="p">[</span><span class="n">x0</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">par_by_name</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">varied_idx</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">varied_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">varied_idx</span><span class="p">)</span>
+
+        <span class="n">new_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="n">xout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">varied_data</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">x0</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">internal_xout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">xout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">internal_params_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">varied_data</span><span class="p">),</span>
+                                             <span class="nb">len</span><span class="p">(</span><span class="n">new_params</span><span class="p">)))</span>
+        <span class="n">info_dicts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">new_x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>  <span class="c1"># copy</span>
+        <span class="n">conds</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;initial_conditions&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># see ConditionalNeqSys</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">varied_data</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">new_params</span><span class="p">[</span><span class="n">varied_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="n">new_params</span> <span class="o">=</span> <span class="n">value</span>  <span class="c1"># e.g. type(new_params) == int</span>
+            <span class="k">if</span> <span class="n">conds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;initial_conditions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conds</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">info_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">new_x0</span><span class="p">,</span> <span class="n">new_params</span><span class="p">,</span> <span class="n">internal_x0</span><span class="p">,</span> <span class="n">solver</span><span class="p">,</span>
+                                      <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">propagate</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">info_dict</span><span class="p">[</span><span class="s1">&#39;success&#39;</span><span class="p">]:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="c1"># See ChainedNeqSys.solve</span>
+                        <span class="n">new_x0</span> <span class="o">=</span> <span class="n">info_dict</span><span class="p">[</span><span class="s1">&#39;x_vecs&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">internal_x0</span> <span class="o">=</span> <span class="n">info_dict</span><span class="p">[</span><span class="s1">&#39;internal_x_vecs&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">conds</span> <span class="o">=</span> <span class="n">info_dict</span><span class="p">[</span><span class="s1">&#39;intermediate_info&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                            <span class="s1">&#39;conditions&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="n">new_x0</span> <span class="o">=</span> <span class="n">x</span>
+                        <span class="n">internal_x0</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="n">conds</span> <span class="o">=</span> <span class="n">info_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;conditions&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">xout</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">x</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">internal_xout</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_x</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">internal_params_out</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_params</span>
+            <span class="n">info_dicts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">info_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">xout</span><span class="p">,</span> <span class="n">info_dicts</span>
+
+    <span class="k">def</span> <span class="nf">plot_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xres</span><span class="p">,</span> <span class="n">varied_data</span><span class="p">,</span> <span class="n">varied_idx</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="s1">&#39;names latex_names&#39;</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_series</span><span class="p">(</span><span class="n">xres</span><span class="p">,</span> <span class="n">varied_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">par_by_name</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">varied_idx</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">varied_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">varied_idx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">latex_param_names</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">%s</span><span class="s1">$&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">latex_param_names</span><span class="p">[</span><span class="n">varied_idx</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param_names</span><span class="p">[</span><span class="n">varied_idx</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">ax</span>
+
+    <span class="k">def</span> <span class="nf">plot_series_residuals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xres</span><span class="p">,</span> <span class="n">varied_data</span><span class="p">,</span> <span class="n">varied_idx</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">nf</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f_cb</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span><span class="n">xres</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">params</span><span class="p">)))</span>
+        <span class="n">xerr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">xres</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nf</span><span class="p">))</span>
+        <span class="n">new_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">xres</span><span class="p">):</span>
+            <span class="n">new_params</span><span class="p">[</span><span class="n">varied_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">varied_data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">xerr</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_cb</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">params</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_series</span><span class="p">(</span><span class="n">xerr</span><span class="p">,</span> <span class="n">varied_data</span><span class="p">,</span> <span class="n">varied_idx</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">plot_series_residuals_internal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varied_data</span><span class="p">,</span> <span class="n">varied_idx</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">nf</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f_cb</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">internal_xout</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_params_out</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+        <span class="n">xerr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">internal_xout</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nf</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">internal_xout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_params_out</span><span class="p">)):</span>
+            <span class="n">xerr</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_cb</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_series</span><span class="p">(</span><span class="n">xerr</span><span class="p">,</span> <span class="n">varied_data</span><span class="p">,</span> <span class="n">varied_idx</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">solve_and_plot_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">varied_data</span><span class="p">,</span> <span class="n">varied_idx</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">plot_residuals_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Solve and plot for a series of a varied parameter &quot;&quot;&quot;</span>
+        <span class="n">sol</span><span class="p">,</span> <span class="n">nfo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solve_series</span><span class="p">(</span>
+            <span class="n">x0</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">varied_data</span><span class="p">,</span> <span class="n">varied_idx</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">ax_sol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_series</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">varied_data</span><span class="p">,</span> <span class="n">varied_idx</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">nfo</span><span class="p">,</span>
+                                  <span class="o">**</span><span class="p">(</span><span class="n">plot_kwargs</span> <span class="ow">or</span> <span class="p">{}))</span>
+
+        <span class="n">extra</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ax_sol</span><span class="o">=</span><span class="n">ax_sol</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">nfo</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">plot_residuals_kwargs</span><span class="p">:</span>
+            <span class="n">extra</span><span class="p">[</span><span class="s1">&#39;ax_resid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_series_residuals_internal</span><span class="p">(</span>
+                <span class="n">varied_data</span><span class="p">,</span> <span class="n">varied_idx</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">nfo</span><span class="p">,</span>
+                <span class="o">**</span><span class="p">(</span><span class="n">plot_residuals_kwargs</span> <span class="ow">or</span> <span class="p">{})</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">sol</span><span class="p">,</span> <span class="n">extra</span>
+
+
+<div class="viewcode-block" id="NeqSys"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.core.NeqSys">[docs]</a><span class="k">class</span> <span class="nc">NeqSys</span><span class="p">(</span><span class="n">_NeqSysBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represent a system of non-linear equations</span>
+
+<span class="sd">    Object representing nonlinear equation system.</span>
+<span class="sd">    Provides unified interface to:</span>
+
+<span class="sd">    - scipy.optimize.root</span>
+<span class="sd">    - NLEQ2</span>
+<span class="sd">    - KINSOL</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    nf : int</span>
+<span class="sd">        Number of functions.</span>
+<span class="sd">    nx : int</span>
+<span class="sd">        Number of independent variables.</span>
+<span class="sd">    f : callback</span>
+<span class="sd">        Function to solve for. Signature ``f(x) -&gt; y`` where ``len(x) == nx``</span>
+<span class="sd">        and ``len(y) == nf``.</span>
+<span class="sd">    jac : callback or None (default)</span>
+<span class="sd">        Jacobian matrix (dfdy).</span>
+<span class="sd">    band : tuple (default: None)</span>
+<span class="sd">        Number of sub- and super-diagonals in jacobian.</span>
+<span class="sd">    names : iterable of str (default: None)</span>
+<span class="sd">        Names of variables, used for plotting and for referencing by name.</span>
+<span class="sd">    param_names : iterable of strings (default: None)</span>
+<span class="sd">        Names of the parameters, used for referencing parameters by name.</span>
+<span class="sd">    pre_processors : iterable of callables (optional)</span>
+<span class="sd">        (Forward) transformation of user-input to :py:meth:`solve`</span>
+<span class="sd">        signature: ``f(x1[:], params1[:]) -&gt; x2[:], params2[:]``.</span>
+<span class="sd">        Insert at beginning.</span>
+<span class="sd">    post_processors : iterable of callables (optional)</span>
+<span class="sd">        (Backward) transformation of result from :py:meth:`solve`</span>
+<span class="sd">        signature: ``f(x2[:], params2[:]) -&gt; x1[:], params1[:]``.</span>
+<span class="sd">        Insert at end.</span>
+<span class="sd">    internal_x0_cb : callback (optional)</span>
+<span class="sd">        callback with signature ``f(x[:], p[:]) -&gt; x0[:]``</span>
+<span class="sd">        if not specified, ``x`` from ``self.pre_processors`` will be used.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; neqsys = NeqSys(2, 2, lambda x, p: [(x[0] - x[1])**p[0]/2 + x[0] - 1,</span>
+<span class="sd">    ...                                     (x[1] - x[0])**p[0]/2 + x[1]])</span>
+<span class="sd">    &gt;&gt;&gt; x, sol = neqsys.solve([1, 0], [3])</span>
+<span class="sd">    &gt;&gt;&gt; assert sol[&#39;success&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; print(x)</span>
+<span class="sd">    [ 0.8411639  0.1588361]</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    pyneqsys.symbolic.SymbolicSys : use a CAS (SymPy by default) to derive</span>
+<span class="sd">                                    the jacobian.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nf</span><span class="p">,</span> <span class="n">nx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">band</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pre_processors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">post_processors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">internal_x0_cb</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NeqSys</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">nx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A callback for f must be provided&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nf</span> <span class="o">&lt;</span> <span class="n">nx</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Under-determined system&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nx</span> <span class="o">=</span> <span class="n">nf</span><span class="p">,</span> <span class="n">nx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_cb</span> <span class="o">=</span> <span class="n">_ensure_3args</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">j_cb</span> <span class="o">=</span> <span class="n">_ensure_3args</span><span class="p">(</span><span class="n">jac</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">band</span> <span class="o">=</span> <span class="n">band</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pre_processors</span> <span class="o">=</span> <span class="n">pre_processors</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">post_processors</span> <span class="o">=</span> <span class="n">post_processors</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">internal_x0_cb</span> <span class="o">=</span> <span class="n">internal_x0_cb</span>
+
+<div class="viewcode-block" id="NeqSys.pre_process"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.core.NeqSys.pre_process">[docs]</a>    <span class="k">def</span> <span class="nf">pre_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">()):</span>
+        <span class="sd">&quot;&quot;&quot; Used internally for transformation of variables &quot;&quot;&quot;</span>
+        <span class="c1"># Should be used by all methods matching &quot;solve_*&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_by_name</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">x0</span> <span class="o">=</span> <span class="p">[</span><span class="n">x0</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">par_by_name</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">pre_processor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre_processors</span><span class="p">:</span>
+            <span class="n">x0</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">pre_processor</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NeqSys.post_process"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.core.NeqSys.post_process">[docs]</a>    <span class="k">def</span> <span class="nf">post_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xout</span><span class="p">,</span> <span class="n">params_out</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Used internally for transformation of variables &quot;&quot;&quot;</span>
+        <span class="c1"># Should be used by all methods matching &quot;solve_*&quot;</span>
+        <span class="k">for</span> <span class="n">post_processor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">post_processors</span><span class="p">:</span>
+            <span class="n">xout</span><span class="p">,</span> <span class="n">params_out</span> <span class="o">=</span> <span class="n">post_processor</span><span class="p">(</span><span class="n">xout</span><span class="p">,</span> <span class="n">params_out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">xout</span><span class="p">,</span> <span class="n">params_out</span></div>
+
+<div class="viewcode-block" id="NeqSys.solve"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.core.NeqSys.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">internal_x0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attached_solver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solve with ``solver``. Convenience method.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x0: 1D array of floats</span>
+<span class="sd">            Guess (subject to ``self.post_processors``)</span>
+<span class="sd">        params: 1D array_like of floats (default: ())</span>
+<span class="sd">            Parameters (subject to ``self.post_processors``)</span>
+<span class="sd">        internal_x0: 1D array of floats (default: None)</span>
+<span class="sd">            When given it overrides (processed) ``x0``. ``internal_x0`` is not</span>
+<span class="sd">            subject to ``self.post_processors``.</span>
+<span class="sd">        solver: str or callable or None or iterable of such</span>
+<span class="sd">            if str: uses _solve_``solver``(\*args, \*\*kwargs).</span>
+<span class="sd">            if ``None``: chooses from PYNEQSYS_SOLVER environment variable.</span>
+<span class="sd">            if iterable: chain solving.</span>
+<span class="sd">        attached_solver: callable factory</span>
+<span class="sd">            invokes: solver = attached_solver(self)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array:</span>
+<span class="sd">            solution vector (post-processed by self.post_processors)</span>
+<span class="sd">        dict:</span>
+<span class="sd">            info dictionary containing &#39;success&#39;, &#39;nfev&#39;, &#39;njev&#39; etc.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; neqsys = NeqSys(2, 2, lambda x, p: [</span>
+<span class="sd">        ...     (x[0] - x[1])**p[0]/2 + x[0] - 1,</span>
+<span class="sd">        ...     (x[1] - x[0])**p[0]/2 + x[1]</span>
+<span class="sd">        ... ])</span>
+<span class="sd">        &gt;&gt;&gt; x, sol = neqsys.solve([1, 0], [3], solver=(None, &#39;mpmath&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; assert sol[&#39;success&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; print(x)</span>
+<span class="sd">        [0.841163901914009663684741869855]</span>
+<span class="sd">        [0.158836098085990336315258130144]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">solver</span> <span class="o">=</span> <span class="p">[</span><span class="n">solver</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attached_solver</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">attached_solver</span> <span class="o">=</span> <span class="p">[</span><span class="n">attached_solver</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">solver</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_x0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">solv</span><span class="p">,</span> <span class="n">attached_solv</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">attached_solver</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">internal_x0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">_x0</span> <span class="o">=</span> <span class="n">internal_x0</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_x0_cb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">_x0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_x0_cb</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+            <span class="n">nfo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_solver_cb</span><span class="p">(</span><span class="n">solv</span><span class="p">,</span> <span class="n">attached_solv</span><span class="p">)(</span><span class="n">_x0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">_x0</span> <span class="o">=</span> <span class="n">nfo</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">internal_x</span> <span class="o">=</span> <span class="n">_x0</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">post_process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">internal_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_params</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">x0</span><span class="p">,</span> <span class="n">nfo</span></div>
+
+    <span class="k">def</span> <span class="nf">_solve_scipy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intern_x0</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use ``scipy.optimize.root``</span>
+<span class="sd">        see: http://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        intern_x0: array_like</span>
+<span class="sd">            initial guess</span>
+<span class="sd">        tol: float</span>
+<span class="sd">            Tolerance</span>
+<span class="sd">        method: str (default: None)</span>
+<span class="sd">            what method to use.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Length 2 tuple:</span>
+<span class="sd">           - solution (array of length self.nx)</span>
+<span class="sd">           - additional output from solver</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="k">import</span> <span class="n">root</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nf</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">:</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;lm&#39;</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">nf</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">:</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;hybr&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Underdetermined problem&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;band&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Set &#39;band&#39; at initialization instead.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;args&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Set &#39;args&#39; as params in initialization instead.&quot;</span><span class="p">)</span>
+
+        <span class="n">new_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">band</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Band argument ignored (see SciPy docs)&quot;</span><span class="p">)</span>
+            <span class="n">new_kwargs</span><span class="p">[</span><span class="s1">&#39;band&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">band</span>
+        <span class="n">new_kwargs</span><span class="p">[</span><span class="s1">&#39;args&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_params</span>
+
+        <span class="k">return</span> <span class="n">root</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f_cb</span><span class="p">,</span> <span class="n">intern_x0</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">j_cb</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="o">**</span><span class="n">new_kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_solve_nleq2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intern_x0</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Provisional, subject to unnotified API breaks &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">pynleq2</span> <span class="k">import</span> <span class="n">solve</span>
+
+        <span class="k">def</span> <span class="nf">f_cb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ierr</span><span class="p">):</span>
+            <span class="n">f_cb</span><span class="o">.</span><span class="n">nfev</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_cb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_params</span><span class="p">),</span> <span class="n">ierr</span>
+        <span class="n">f_cb</span><span class="o">.</span><span class="n">nfev</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">def</span> <span class="nf">j_cb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ierr</span><span class="p">):</span>
+            <span class="n">j_cb</span><span class="o">.</span><span class="n">njev</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">j_cb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_params</span><span class="p">),</span> <span class="n">ierr</span>
+        <span class="n">j_cb</span><span class="o">.</span><span class="n">njev</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">x</span><span class="p">,</span> <span class="n">ierr</span> <span class="o">=</span> <span class="n">solve</span><span class="p">(</span><span class="n">f_cb</span><span class="p">,</span> <span class="n">j_cb</span><span class="p">,</span> <span class="n">intern_x0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+            <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">f_cb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+            <span class="s1">&#39;success&#39;</span><span class="p">:</span> <span class="n">ierr</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;nfev&#39;</span><span class="p">:</span> <span class="n">f_cb</span><span class="o">.</span><span class="n">nfev</span><span class="p">,</span>
+            <span class="s1">&#39;njev&#39;</span><span class="p">:</span> <span class="n">j_cb</span><span class="o">.</span><span class="n">njev</span><span class="p">,</span>
+            <span class="s1">&#39;ierr&#39;</span><span class="p">:</span> <span class="n">ierr</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">_solve_kinsol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intern_x0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">pykinsol</span>
+
+        <span class="k">def</span> <span class="nf">_f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fout</span><span class="p">):</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_cb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_params</span><span class="p">)</span>
+            <span class="n">fout</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">res</span>
+
+        <span class="k">def</span> <span class="nf">_j</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Jout</span><span class="p">,</span> <span class="n">fx</span><span class="p">):</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">j_cb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_params</span><span class="p">)</span>
+            <span class="n">Jout</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[:,</span> <span class="p">:]</span>
+
+        <span class="k">return</span> <span class="n">pykinsol</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">_f</span><span class="p">,</span> <span class="n">_j</span><span class="p">,</span> <span class="n">intern_x0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_solve_mpmath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intern_x0</span><span class="p">,</span> <span class="n">dps</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">maxsteps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">mpmath</span>
+        <span class="kn">from</span> <span class="nn">mpmath.calculus.optimization</span> <span class="k">import</span> <span class="n">MDNewton</span>
+        <span class="n">mp</span> <span class="o">=</span> <span class="n">mpmath</span><span class="o">.</span><span class="n">mp</span>
+        <span class="n">mp</span><span class="o">.</span><span class="n">dps</span> <span class="o">=</span> <span class="n">dps</span>
+
+        <span class="k">def</span> <span class="nf">_mpf</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>  <span class="c1"># e.g. mpmath chokes on numpy&#39;s int64</span>
+                <span class="k">return</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+        <span class="n">intern_p</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_mpf</span><span class="p">(</span><span class="n">_p</span><span class="p">)</span> <span class="k">for</span> <span class="n">_p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_params</span><span class="p">)</span>
+        <span class="n">maxsteps</span> <span class="o">=</span> <span class="n">maxsteps</span> <span class="ow">or</span> <span class="n">MDNewton</span><span class="o">.</span><span class="n">maxsteps</span>
+        <span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span> <span class="ow">or</span> <span class="n">mp</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="mi">1024</span>
+
+        <span class="k">def</span> <span class="nf">f_cb</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">f_cb</span><span class="o">.</span><span class="n">nfev</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_cb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">intern_p</span><span class="p">)</span>
+        <span class="n">f_cb</span><span class="o">.</span><span class="n">nfev</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">j_cb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">j_cb</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">):</span>
+                <span class="n">j_cb</span><span class="o">.</span><span class="n">njev</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">j_cb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">intern_p</span><span class="p">)</span>
+            <span class="n">j_cb</span><span class="o">.</span><span class="n">njev</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;J&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">j_cb</span>
+        <span class="n">intern_x0</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_mpf</span><span class="p">(</span><span class="n">_x</span><span class="p">)</span> <span class="k">for</span> <span class="n">_x</span> <span class="ow">in</span> <span class="n">intern_x0</span><span class="p">)</span>
+        <span class="n">iters</span> <span class="o">=</span> <span class="n">MDNewton</span><span class="p">(</span><span class="n">mp</span><span class="p">,</span> <span class="n">f_cb</span><span class="p">,</span> <span class="n">intern_x0</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">mp</span><span class="o">.</span><span class="n">norm</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">iters</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">lim</span> <span class="o">=</span> <span class="n">tol</span><span class="o">*</span><span class="nb">max</span><span class="p">(</span><span class="n">mp</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">err</span> <span class="o">&lt;</span> <span class="n">lim</span><span class="p">:</span>
+                <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">maxsteps</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;success&#39;</span><span class="p">:</span> <span class="n">success</span><span class="p">,</span> <span class="s1">&#39;nfev&#39;</span><span class="p">:</span> <span class="n">f_cb</span><span class="o">.</span><span class="n">nfev</span><span class="p">,</span> <span class="s1">&#39;nit&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">j_cb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;njev&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">j_cb</span><span class="o">.</span><span class="n">njev</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">_solve_ipopt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intern_x0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="kn">from</span> <span class="nn">ipopt</span> <span class="k">import</span> <span class="n">minimize_ipopt</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;ipopt interface untested at the moment&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">f_cb</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">f_cb</span><span class="o">.</span><span class="n">nfev</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f_cb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_params</span><span class="p">)))</span>
+        <span class="n">f_cb</span><span class="o">.</span><span class="n">nfev</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">j_cb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">j_cb</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+                <span class="n">j_cb</span><span class="o">.</span><span class="n">njev</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">j_cb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_params</span><span class="p">)</span>
+            <span class="n">j_cb</span><span class="o">.</span><span class="n">njev</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;jac&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">j_cb</span>
+
+        <span class="k">return</span> <span class="n">minimize_ipopt</span><span class="p">(</span><span class="n">f_cb</span><span class="p">,</span> <span class="n">intern_x0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_solve_levmar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intern_x0</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;levmar interface is provisional, may change.&quot;</span><span class="p">)</span>
+        <span class="kn">import</span> <span class="nn">levmar</span>
+
+        <span class="k">if</span> <span class="s1">&#39;eps1&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="s1">&#39;eps2&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="s1">&#39;eps3&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;eps1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;eps2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;eps3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tol</span>
+
+        <span class="k">def</span> <span class="nf">_f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f_cb</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">_j</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">j_cb</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">))</span>
+
+        <span class="n">_x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">intern_x0</span><span class="p">)</span>
+        <span class="n">_y0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nf</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">(</span><span class="n">record</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">wrns</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;always&quot;</span><span class="p">)</span>
+            <span class="n">p_opt</span><span class="p">,</span> <span class="n">p_cov</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">levmar</span><span class="o">.</span><span class="n">levmar</span><span class="p">(</span><span class="n">_f</span><span class="p">,</span> <span class="n">_x0</span><span class="p">,</span> <span class="n">_y0</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">internal_params</span><span class="p">,),</span>
+                                               <span class="n">jacf</span><span class="o">=</span><span class="n">_j</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">wrns</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">_f</span><span class="p">(</span><span class="n">p_opt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_params</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">wrns</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">w</span>
+        <span class="n">e2p0</span><span class="p">,</span> <span class="p">(</span><span class="n">e2</span><span class="p">,</span> <span class="n">infJTe</span><span class="p">,</span> <span class="n">Dp2</span><span class="p">,</span> <span class="n">mu_maxJTJii</span><span class="p">),</span> <span class="n">nit</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">nfev</span><span class="p">,</span> <span class="n">njev</span><span class="p">,</span> <span class="n">nlinsolv</span> <span class="o">=</span> <span class="n">info</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">p_opt</span><span class="p">,</span> <span class="s1">&#39;cov&#39;</span><span class="p">:</span> <span class="n">p_cov</span><span class="p">,</span> <span class="s1">&#39;nfev&#39;</span><span class="p">:</span> <span class="n">nfev</span><span class="p">,</span> <span class="s1">&#39;njev&#39;</span><span class="p">:</span> <span class="n">njev</span><span class="p">,</span> <span class="s1">&#39;nit&#39;</span><span class="p">:</span> <span class="n">nit</span><span class="p">,</span>
+                <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="n">reason</span><span class="p">,</span> <span class="s1">&#39;nlinsolv&#39;</span><span class="p">:</span> <span class="n">nlinsolv</span><span class="p">,</span> <span class="s1">&#39;success&#39;</span><span class="p">:</span> <span class="n">success</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="ConditionalNeqSys"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.core.ConditionalNeqSys">[docs]</a><span class="k">class</span> <span class="nc">ConditionalNeqSys</span><span class="p">(</span><span class="n">_NeqSysBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Collect multiple systems of non-linear equations with different</span>
+<span class="sd">    conditionals.</span>
+
+<span class="sd">    If a problem in a fixed number of variables is described by different</span>
+<span class="sd">    systems of equations for different domains, then this class may be used</span>
+<span class="sd">    to describe that set of systems.</span>
+
+<span class="sd">    The user provides a set of conditions which governs what system of</span>
+<span class="sd">    equations to apply. The set of conditions then represent a vector</span>
+<span class="sd">    of booleans which is passed to a user provided factory function of</span>
+<span class="sd">    NeqSys instances. The conditions may be asymmetrical (each condition</span>
+<span class="sd">    consits of two callbacks, one for evaluating when the condition was</span>
+<span class="sd">    previously False, and one when it was previously True. The motivation</span>
+<span class="sd">    for this asymmetry is that a user may want to introduce a tolerance for</span>
+<span class="sd">    numerical noise in the solution (and avoid possibly endless loops).</span>
+
+<span class="sd">    If ``fastcache`` is available an LRU cache will be used for</span>
+<span class="sd">    ``neqsys_factory``, it is therefore important that the function is</span>
+<span class="sd">    idempotent.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    condition_cb_pairs : list of (callback, callback) tuples</span>
+<span class="sd">        Callbacks should have the signature: ``f(x, p) -&gt; bool``.</span>
+<span class="sd">    neqsys_factory : callback</span>
+<span class="sd">        Should have the signature ``f(conds) -&gt; NeqSys`` instance</span>
+<span class="sd">        where conds is a list of bools.</span>
+<span class="sd">    names : list of strings</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from math import sin, pi</span>
+<span class="sd">    &gt;&gt;&gt; f_a = lambda x, p: [sin(p[0]*x[0])]  # when x &lt;= 0</span>
+<span class="sd">    &gt;&gt;&gt; f_b = lambda x, p: [x[0]*(p[1]-x[0])]  # when x &gt;= 0</span>
+<span class="sd">    &gt;&gt;&gt; factory = lambda conds: NeqSys(1, 1, f_b) if conds[0] else NeqSys(</span>
+<span class="sd">    ...     1, 1, f_a)</span>
+<span class="sd">    &gt;&gt;&gt; cneqsys = ConditionalNeqSys([(lambda x, p: x[0] &gt; 0,  # no 0-switch</span>
+<span class="sd">    ...                               lambda x, p: x[0] &gt;= 0)],  # no 0-switch</span>
+<span class="sd">    ...                             factory)</span>
+<span class="sd">    &gt;&gt;&gt; x, sol = cneqsys.solve([0], [pi, 3])</span>
+<span class="sd">    &gt;&gt;&gt; assert sol[&#39;success&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; print(x)</span>
+<span class="sd">    [ 0.]</span>
+<span class="sd">    &gt;&gt;&gt; x, sol = cneqsys.solve([-1.4], [pi, 3])</span>
+<span class="sd">    &gt;&gt;&gt; assert sol[&#39;success&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; print(x)</span>
+<span class="sd">    [-1.]</span>
+<span class="sd">    &gt;&gt;&gt; x, sol = cneqsys.solve([2], [pi, 3])</span>
+<span class="sd">    &gt;&gt;&gt; assert sol[&#39;success&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; print(x)</span>
+<span class="sd">    [ 3.]</span>
+<span class="sd">    &gt;&gt;&gt; x, sol = cneqsys.solve([7], [pi, 3])</span>
+<span class="sd">    &gt;&gt;&gt; assert sol[&#39;success&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; print(x)</span>
+<span class="sd">    [ 3.]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition_cb_pairs</span><span class="p">,</span> <span class="n">neqsys_factory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ConditionalNeqSys</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">condition_cb_pairs</span> <span class="o">=</span> <span class="n">condition_cb_pairs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">neqsys_factory</span> <span class="o">=</span> <span class="n">clru_cache</span><span class="p">(</span><span class="n">LRU_CACHE_SIZE</span><span class="p">)(</span><span class="n">neqsys_factory</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ConditionalNeqSys.get_conds"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.core.ConditionalNeqSys.get_conds">[docs]</a>    <span class="k">def</span> <span class="nf">get_conds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">prev_conds</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">prev_conds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">prev_conds</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">condition_cb_pairs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">bw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="k">if</span> <span class="n">prev</span> <span class="k">else</span> <span class="n">fw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="k">for</span>
+                      <span class="n">prev</span><span class="p">,</span> <span class="p">(</span><span class="n">fw</span><span class="p">,</span> <span class="n">bw</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">prev_conds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">condition_cb_pairs</span><span class="p">)])</span></div>
+
+<div class="viewcode-block" id="ConditionalNeqSys.solve"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.core.ConditionalNeqSys.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">internal_x0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">conditional_maxiter</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">initial_conditions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Solve the problem (systems of equations) &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">initial_conditions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">conds</span> <span class="o">=</span> <span class="n">initial_conditions</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">conds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_conds</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">initial_conditions</span><span class="p">)</span>
+        <span class="n">idx</span><span class="p">,</span> <span class="n">nfev</span><span class="p">,</span> <span class="n">njev</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="n">conditional_maxiter</span><span class="p">:</span>
+            <span class="n">neqsys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neqsys_factory</span><span class="p">(</span><span class="n">conds</span><span class="p">)</span>
+            <span class="n">x0</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">neqsys</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">internal_x0</span><span class="p">,</span> <span class="n">solver</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">internal_x0</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">nfev</span> <span class="o">+=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;nfev&#39;</span><span class="p">]</span>
+            <span class="n">njev</span> <span class="o">+=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;njev&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">new_conds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_conds</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">conds</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_conds</span> <span class="o">==</span> <span class="n">conds</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">conds</span> <span class="o">=</span> <span class="n">new_conds</span>
+            <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="n">conditional_maxiter</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Solving failed, conditional_maxiter reached&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">internal_x</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">internal_params</span> <span class="o">=</span> <span class="n">neqsys</span><span class="o">.</span><span class="n">internal_params</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;success&#39;</span><span class="p">:</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;success&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;conditions&#39;</span><span class="p">:</span> <span class="n">conds</span><span class="p">,</span>
+            <span class="s1">&#39;nfev&#39;</span><span class="p">:</span> <span class="n">nfev</span><span class="p">,</span>
+            <span class="s1">&#39;njev&#39;</span><span class="p">:</span> <span class="n">njev</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="s1">&#39;fun&#39;</span> <span class="ow">in</span> <span class="n">info</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;fun&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;fun&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">x0</span><span class="p">,</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="ConditionalNeqSys.post_process"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.core.ConditionalNeqSys.post_process">[docs]</a>    <span class="k">def</span> <span class="nf">post_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">conds</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">conds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">conds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_conds</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">neqsys_factory</span><span class="p">(</span><span class="n">conds</span><span class="p">)</span><span class="o">.</span><span class="n">post_process</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConditionalNeqSys.pre_process"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.core.ConditionalNeqSys.pre_process">[docs]</a>    <span class="k">def</span> <span class="nf">pre_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">conds</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">conds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">conds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_conds</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">neqsys_factory</span><span class="p">(</span><span class="n">conds</span><span class="p">)</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConditionalNeqSys.f_cb"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.core.ConditionalNeqSys.f_cb">[docs]</a>    <span class="k">def</span> <span class="nf">f_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">conds</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">conds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">conds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_conds</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">neqsys_factory</span><span class="p">(</span><span class="n">conds</span><span class="p">)</span><span class="o">.</span><span class="n">f_cb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ChainedNeqSys"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.core.ChainedNeqSys">[docs]</a><span class="k">class</span> <span class="nc">ChainedNeqSys</span><span class="p">(</span><span class="n">_NeqSysBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Chain multiple formulations of non-linear systems for using</span>
+<span class="sd">    the result of one as starting guess for the other</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; neqsys_lin = NeqSys(1, 1, lambda x, p: [x[0]**2 - p[0]])</span>
+<span class="sd">    &gt;&gt;&gt; from math import log, exp</span>
+<span class="sd">    &gt;&gt;&gt; neqsys_log = NeqSys(1, 1, lambda x, p: [2*x[0] - log(p[0])],</span>
+<span class="sd">    ...    pre_processors=[lambda x, p: ([log(x[0]+1e-60)], p)],</span>
+<span class="sd">    ...    post_processors=[lambda x, p: ([exp(x[0])], p)])</span>
+<span class="sd">    &gt;&gt;&gt; chained = ChainedNeqSys([neqsys_log, neqsys_lin])</span>
+<span class="sd">    &gt;&gt;&gt; x, info = chained.solve([1, 1], [4])</span>
+<span class="sd">    &gt;&gt;&gt; assert info[&#39;success&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; print(x)</span>
+<span class="sd">    [ 2.]</span>
+<span class="sd">    &gt;&gt;&gt; print(info[&#39;intermediate_info&#39;][0][&#39;nfev&#39;],</span>
+<span class="sd">    ...       info[&#39;intermediate_info&#39;][1][&#39;nfev&#39;])  # doctest: +SKIP</span>
+<span class="sd">    4 3</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">neqsystems</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ChainedNeqSys</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">neqsystems</span> <span class="o">=</span> <span class="n">neqsystems</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neqsystems</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">f_cb</span>
+
+<div class="viewcode-block" id="ChainedNeqSys.solve"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.core.ChainedNeqSys.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">internal_x0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">x_vecs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">info_vec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">internal_x_vecs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">neqsys</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">neqsystems</span><span class="p">):</span>
+            <span class="n">x0</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">neqsys</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">internal_x0</span><span class="p">,</span> <span class="n">solver</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">internal_x</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">internal_params</span> <span class="o">=</span> <span class="n">neqsys</span><span class="o">.</span><span class="n">internal_params</span>
+            <span class="n">internal_x0</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># only use for first iteration</span>
+            <span class="k">if</span> <span class="s1">&#39;conditions&#39;</span> <span class="ow">in</span> <span class="n">info</span><span class="p">:</span>  <span class="c1"># see ConditionalNeqSys.solve</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;initial_conditions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;conditions&#39;</span><span class="p">]</span>
+            <span class="n">x_vecs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+            <span class="n">internal_x_vecs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neqsys</span><span class="o">.</span><span class="n">internal_x</span><span class="p">)</span>
+            <span class="n">info_vec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_x</span><span class="p">,</span>
+            <span class="s1">&#39;success&#39;</span><span class="p">:</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;success&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;nfev&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">([</span><span class="n">nfo</span><span class="p">[</span><span class="s1">&#39;nfev&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">nfo</span> <span class="ow">in</span> <span class="n">info_vec</span><span class="p">]),</span>
+            <span class="s1">&#39;njev&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">([</span><span class="n">nfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;njev&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">nfo</span> <span class="ow">in</span> <span class="n">info_vec</span><span class="p">]),</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="s1">&#39;fun&#39;</span> <span class="ow">in</span> <span class="n">info</span><span class="p">:</span>
+            <span class="n">info</span><span class="p">[</span><span class="s1">&#39;fun&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;fun&#39;</span><span class="p">]</span>
+        <span class="n">info</span><span class="p">[</span><span class="s1">&#39;x_vecs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_vecs</span>
+        <span class="n">info</span><span class="p">[</span><span class="s1">&#39;intermediate_info&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">info_vec</span>
+        <span class="n">info</span><span class="p">[</span><span class="s1">&#39;internal_x_vecs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">internal_x_vecs</span>
+        <span class="k">return</span> <span class="n">x0</span><span class="p">,</span> <span class="n">info</span></div>
+
+<div class="viewcode-block" id="ChainedNeqSys.post_process"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.core.ChainedNeqSys.post_process">[docs]</a>    <span class="k">def</span> <span class="nf">post_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">neqsystems</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">post_process</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>  <span class="c1"># outermost</span></div>
+
+<div class="viewcode-block" id="ChainedNeqSys.pre_process"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.core.ChainedNeqSys.pre_process">[docs]</a>    <span class="k">def</span> <span class="nf">pre_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">conds</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">neqsystems</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>  <span class="c1"># outermost</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Bjoern I. Dahlgren &lt;bjodah@gmail.com&gt;.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.5.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

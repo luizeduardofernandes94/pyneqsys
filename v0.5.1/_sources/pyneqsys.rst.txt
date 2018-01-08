@@ -1,0 +1,44 @@
+pyneqsys package
+================
+
+.. automodule:: pyneqsys
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Submodules
+----------
+
+pyneqsys\.core module
+---------------------
+
+.. automodule:: pyneqsys.core
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pyneqsys\.plotting module
+-------------------------
+
+.. automodule:: pyneqsys.plotting
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pyneqsys\.solvers module
+------------------------
+
+.. automodule:: pyneqsys.solvers
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pyneqsys\.symbolic module
+-------------------------
+
+.. automodule:: pyneqsys.symbolic
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
