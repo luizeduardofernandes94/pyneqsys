@@ -1,0 +1,1288 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyneqsys package &mdash; pyneqsys 0.5.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="pyneqsys 0.5.2 documentation" href="index.html"/>
+        <link rel="prev" title="Welcome to pyneqsys’s documentation!" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyneqsys
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pyneqsys package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyneqsys.core">pyneqsys.core module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyneqsys.plotting">pyneqsys.plotting module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyneqsys.solvers">pyneqsys.solvers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyneqsys.symbolic">pyneqsys.symbolic module</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyneqsys</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>pyneqsys package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/pyneqsys.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-pyneqsys">
+<span id="pyneqsys-package"></span><h1>pyneqsys package<a class="headerlink" href="#module-pyneqsys" title="Permalink to this headline">¶</a></h1>
+<p>Package for numerically solving symbolically defined systems of non-linear equations.</p>
+<p>pyneqsys ties computer algebra systems like:</p>
+<ul class="simple">
+<li>SymPy</li>
+<li>symengine</li>
+<li>SymCXX</li>
+</ul>
+<p>and numerical solvers such as:</p>
+<ul class="simple">
+<li>MINPACK in SciPy</li>
+<li>NLEQ2 in pynleq2</li>
+<li>KINSOL in pykinsol</li>
+</ul>
+<p>together. In addition <code class="docutils literal"><span class="pre">pyneqsys</span></code> provides helper classes for
+handling e.g. conditional equations in a system.</p>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pyneqsys.core">
+<span id="pyneqsys-core-module"></span><h2>pyneqsys.core module<a class="headerlink" href="#module-pyneqsys.core" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneqsys.core.ChainedNeqSys">
+<em class="property">class </em><code class="descclassname">pyneqsys.core.</code><code class="descname">ChainedNeqSys</code><span class="sig-paren">(</span><em>neqsystems</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/core.html#ChainedNeqSys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.core.ChainedNeqSys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">pyneqsys.core._NeqSysBase</span></code></p>
+<p>Chain multiple formulations of non-linear systems for using
+the result of one as starting guess for the other</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">neqsys_lin</span> <span class="o">=</span> <span class="n">NeqSys</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">exp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">neqsys_log</span> <span class="o">=</span> <span class="n">NeqSys</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">log</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
+<span class="gp">... </span>   <span class="n">pre_processors</span><span class="o">=</span><span class="p">[</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="p">([</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mf">1e-60</span><span class="p">)],</span> <span class="n">p</span><span class="p">)],</span>
+<span class="gp">... </span>   <span class="n">post_processors</span><span class="o">=</span><span class="p">[</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="p">([</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="n">p</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chained</span> <span class="o">=</span> <span class="n">ChainedNeqSys</span><span class="p">([</span><span class="n">neqsys_log</span><span class="p">,</span> <span class="n">neqsys_lin</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">chained</span><span class="o">.</span><span class="n">solve</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;success&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">[ 2.]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;intermediate_info&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;nfev&#39;</span><span class="p">],</span>
+<span class="gp">... </span>      <span class="n">info</span><span class="p">[</span><span class="s1">&#39;intermediate_info&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;nfev&#39;</span><span class="p">])</span>  
+<span class="go">4 3</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_series</span></code>(xres,&nbsp;varied_data,&nbsp;varied_idx,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_series_residuals</span></code>(xres,&nbsp;varied_data,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_series_residuals_internal</span></code>(varied_data,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#pyneqsys.core.ChainedNeqSys.post_process" title="pyneqsys.core.ChainedNeqSys.post_process"><code class="xref py py-obj docutils literal"><span class="pre">post_process</span></code></a>(x,&nbsp;params)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#pyneqsys.core.ChainedNeqSys.pre_process" title="pyneqsys.core.ChainedNeqSys.pre_process"><code class="xref py py-obj docutils literal"><span class="pre">pre_process</span></code></a>(x,&nbsp;params[,&nbsp;conds])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">rms</span></code>(x[,&nbsp;params])</td>
+<td>Returns root means square value of f(x, params)</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#pyneqsys.core.ChainedNeqSys.solve" title="pyneqsys.core.ChainedNeqSys.solve"><code class="xref py py-obj docutils literal"><span class="pre">solve</span></code></a>(x0[,&nbsp;params,&nbsp;internal_x0,&nbsp;solver])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">solve_and_plot_series</span></code>(x0,&nbsp;params,&nbsp;…[,&nbsp;…])</td>
+<td>Solve and plot for a series of a varied parameter</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">solve_series</span></code>(x0,&nbsp;params,&nbsp;varied_data,&nbsp;varied_idx)</td>
+<td>Solve system for a set of parameters in which one is varied</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyneqsys.core.ChainedNeqSys.post_process">
+<code class="descname">post_process</code><span class="sig-paren">(</span><em>x</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/core.html#ChainedNeqSys.post_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.core.ChainedNeqSys.post_process" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.core.ChainedNeqSys.pre_process">
+<code class="descname">pre_process</code><span class="sig-paren">(</span><em>x</em>, <em>params</em>, <em>conds=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/core.html#ChainedNeqSys.pre_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.core.ChainedNeqSys.pre_process" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.core.ChainedNeqSys.solve">
+<code class="descname">solve</code><span class="sig-paren">(</span><em>x0</em>, <em>params=()</em>, <em>internal_x0=None</em>, <em>solver=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/core.html#ChainedNeqSys.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.core.ChainedNeqSys.solve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyneqsys.core.ConditionalNeqSys">
+<em class="property">class </em><code class="descclassname">pyneqsys.core.</code><code class="descname">ConditionalNeqSys</code><span class="sig-paren">(</span><em>condition_cb_pairs</em>, <em>neqsys_factory</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/core.html#ConditionalNeqSys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.core.ConditionalNeqSys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">pyneqsys.core._NeqSysBase</span></code></p>
+<p>Collect multiple systems of non-linear equations with different
+conditionals.</p>
+<p>If a problem in a fixed number of variables is described by different
+systems of equations for different domains, then this class may be used
+to describe that set of systems.</p>
+<p>The user provides a set of conditions which governs what system of
+equations to apply. The set of conditions then represent a vector
+of booleans which is passed to a user provided factory function of
+NeqSys instances. The conditions may be asymmetrical (each condition
+consits of two callbacks, one for evaluating when the condition was
+previously False, and one when it was previously True. The motivation
+for this asymmetry is that a user may want to introduce a tolerance for
+numerical noise in the solution (and avoid possibly endless loops).</p>
+<p>If <code class="docutils literal"><span class="pre">fastcache</span></code> is available an LRU cache will be used for
+<code class="docutils literal"><span class="pre">neqsys_factory</span></code>, it is therefore important that the function is
+idempotent.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>condition_cb_pairs</strong> : list of (callback, callback) tuples</p>
+<blockquote>
+<div><p>Callbacks should have the signature: <code class="docutils literal"><span class="pre">f(x,</span> <span class="pre">p)</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code>.</p>
+</div></blockquote>
+<p><strong>neqsys_factory</strong> : callback</p>
+<blockquote>
+<div><p>Should have the signature <code class="docutils literal"><span class="pre">f(conds)</span> <span class="pre">-&gt;</span> <span class="pre">NeqSys</span></code> instance
+where conds is a list of bools.</p>
+</div></blockquote>
+<p class="last"><strong>names</strong> : list of strings</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">sin</span><span class="p">,</span> <span class="n">pi</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f_a</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="p">[</span><span class="n">sin</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>  <span class="c1"># when x &lt;= 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f_b</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>  <span class="c1"># when x &gt;= 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">factory</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">conds</span><span class="p">:</span> <span class="n">NeqSys</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">f_b</span><span class="p">)</span> <span class="k">if</span> <span class="n">conds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">NeqSys</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">f_a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cneqsys</span> <span class="o">=</span> <span class="n">ConditionalNeqSys</span><span class="p">([(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># no 0-switch</span>
+<span class="gp">... </span>                              <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)],</span>  <span class="c1"># no 0-switch</span>
+<span class="gp">... </span>                            <span class="n">factory</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">cneqsys</span><span class="o">.</span><span class="n">solve</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">pi</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">sol</span><span class="p">[</span><span class="s1">&#39;success&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">[ 0.]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">cneqsys</span><span class="o">.</span><span class="n">solve</span><span class="p">([</span><span class="o">-</span><span class="mf">1.4</span><span class="p">],</span> <span class="p">[</span><span class="n">pi</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">sol</span><span class="p">[</span><span class="s1">&#39;success&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">[-1.]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">cneqsys</span><span class="o">.</span><span class="n">solve</span><span class="p">([</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="n">pi</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">sol</span><span class="p">[</span><span class="s1">&#39;success&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">[ 3.]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">cneqsys</span><span class="o">.</span><span class="n">solve</span><span class="p">([</span><span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="n">pi</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">sol</span><span class="p">[</span><span class="s1">&#39;success&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">[ 3.]</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#pyneqsys.core.ConditionalNeqSys.f_cb" title="pyneqsys.core.ConditionalNeqSys.f_cb"><code class="xref py py-obj docutils literal"><span class="pre">f_cb</span></code></a>(x,&nbsp;params[,&nbsp;conds])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#pyneqsys.core.ConditionalNeqSys.get_conds" title="pyneqsys.core.ConditionalNeqSys.get_conds"><code class="xref py py-obj docutils literal"><span class="pre">get_conds</span></code></a>(x,&nbsp;params[,&nbsp;prev_conds])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_series</span></code>(xres,&nbsp;varied_data,&nbsp;varied_idx,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_series_residuals</span></code>(xres,&nbsp;varied_data,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_series_residuals_internal</span></code>(varied_data,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#pyneqsys.core.ConditionalNeqSys.post_process" title="pyneqsys.core.ConditionalNeqSys.post_process"><code class="xref py py-obj docutils literal"><span class="pre">post_process</span></code></a>(x,&nbsp;params[,&nbsp;conds])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#pyneqsys.core.ConditionalNeqSys.pre_process" title="pyneqsys.core.ConditionalNeqSys.pre_process"><code class="xref py py-obj docutils literal"><span class="pre">pre_process</span></code></a>(x,&nbsp;params[,&nbsp;conds])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">rms</span></code>(x[,&nbsp;params])</td>
+<td>Returns root means square value of f(x, params)</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#pyneqsys.core.ConditionalNeqSys.solve" title="pyneqsys.core.ConditionalNeqSys.solve"><code class="xref py py-obj docutils literal"><span class="pre">solve</span></code></a>(x0[,&nbsp;params,&nbsp;internal_x0,&nbsp;solver,&nbsp;…])</td>
+<td>Solve the problem (systems of equations)</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">solve_and_plot_series</span></code>(x0,&nbsp;params,&nbsp;…[,&nbsp;…])</td>
+<td>Solve and plot for a series of a varied parameter</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">solve_series</span></code>(x0,&nbsp;params,&nbsp;varied_data,&nbsp;varied_idx)</td>
+<td>Solve system for a set of parameters in which one is varied</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyneqsys.core.ConditionalNeqSys.f_cb">
+<code class="descname">f_cb</code><span class="sig-paren">(</span><em>x</em>, <em>params</em>, <em>conds=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/core.html#ConditionalNeqSys.f_cb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.core.ConditionalNeqSys.f_cb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.core.ConditionalNeqSys.get_conds">
+<code class="descname">get_conds</code><span class="sig-paren">(</span><em>x</em>, <em>params</em>, <em>prev_conds=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/core.html#ConditionalNeqSys.get_conds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.core.ConditionalNeqSys.get_conds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.core.ConditionalNeqSys.post_process">
+<code class="descname">post_process</code><span class="sig-paren">(</span><em>x</em>, <em>params</em>, <em>conds=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/core.html#ConditionalNeqSys.post_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.core.ConditionalNeqSys.post_process" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.core.ConditionalNeqSys.pre_process">
+<code class="descname">pre_process</code><span class="sig-paren">(</span><em>x</em>, <em>params</em>, <em>conds=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/core.html#ConditionalNeqSys.pre_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.core.ConditionalNeqSys.pre_process" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.core.ConditionalNeqSys.solve">
+<code class="descname">solve</code><span class="sig-paren">(</span><em>x0</em>, <em>params=()</em>, <em>internal_x0=None</em>, <em>solver=None</em>, <em>conditional_maxiter=20</em>, <em>initial_conditions=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/core.html#ConditionalNeqSys.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.core.ConditionalNeqSys.solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve the problem (systems of equations)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyneqsys.core.NeqSys">
+<em class="property">class </em><code class="descclassname">pyneqsys.core.</code><code class="descname">NeqSys</code><span class="sig-paren">(</span><em>nf</em>, <em>nx=None</em>, <em>f=None</em>, <em>jac=None</em>, <em>band=None</em>, <em>pre_processors=None</em>, <em>post_processors=None</em>, <em>internal_x0_cb=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/core.html#NeqSys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.core.NeqSys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">pyneqsys.core._NeqSysBase</span></code></p>
+<p>Represent a system of non-linear equations</p>
+<p>Object representing nonlinear equation system.
+Provides unified interface to:</p>
+<ul class="simple">
+<li>scipy.optimize.root</li>
+<li>NLEQ2</li>
+<li>KINSOL</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>nf</strong> : int</p>
+<blockquote>
+<div><p>Number of functions.</p>
+</div></blockquote>
+<p><strong>nx</strong> : int</p>
+<blockquote>
+<div><p>Number of independent variables.</p>
+</div></blockquote>
+<p><strong>f</strong> : callback</p>
+<blockquote>
+<div><p>Function to solve for. Signature <code class="docutils literal"><span class="pre">f(x)</span> <span class="pre">-&gt;</span> <span class="pre">y</span></code> where <code class="docutils literal"><span class="pre">len(x)</span> <span class="pre">==</span> <span class="pre">nx</span></code>
+and <code class="docutils literal"><span class="pre">len(y)</span> <span class="pre">==</span> <span class="pre">nf</span></code>.</p>
+</div></blockquote>
+<p><strong>jac</strong> : callback or None (default)</p>
+<blockquote>
+<div><p>Jacobian matrix (dfdy).</p>
+</div></blockquote>
+<p><strong>band</strong> : tuple (default: None)</p>
+<blockquote>
+<div><p>Number of sub- and super-diagonals in jacobian.</p>
+</div></blockquote>
+<p><strong>names</strong> : iterable of str (default: None)</p>
+<blockquote>
+<div><p>Names of variables, used for plotting and for referencing by name.</p>
+</div></blockquote>
+<p><strong>param_names</strong> : iterable of strings (default: None)</p>
+<blockquote>
+<div><p>Names of the parameters, used for referencing parameters by name.</p>
+</div></blockquote>
+<p><strong>pre_processors</strong> : iterable of callables (optional)</p>
+<blockquote>
+<div><p>(Forward) transformation of user-input to <a class="reference internal" href="#pyneqsys.core.NeqSys.solve" title="pyneqsys.core.NeqSys.solve"><code class="xref py py-meth docutils literal"><span class="pre">solve()</span></code></a>
+signature: <code class="docutils literal"><span class="pre">f(x1[:],</span> <span class="pre">params1[:])</span> <span class="pre">-&gt;</span> <span class="pre">x2[:],</span> <span class="pre">params2[:]</span></code>.
+Insert at beginning.</p>
+</div></blockquote>
+<p><strong>post_processors</strong> : iterable of callables (optional)</p>
+<blockquote>
+<div><p>(Backward) transformation of result from <a class="reference internal" href="#pyneqsys.core.NeqSys.solve" title="pyneqsys.core.NeqSys.solve"><code class="xref py py-meth docutils literal"><span class="pre">solve()</span></code></a>
+signature: <code class="docutils literal"><span class="pre">f(x2[:],</span> <span class="pre">params2[:])</span> <span class="pre">-&gt;</span> <span class="pre">x1[:],</span> <span class="pre">params1[:]</span></code>.
+Insert at end.</p>
+</div></blockquote>
+<p><strong>internal_x0_cb</strong> : callback (optional)</p>
+<blockquote class="last">
+<div><p>callback with signature <code class="docutils literal"><span class="pre">f(x[:],</span> <span class="pre">p[:])</span> <span class="pre">-&gt;</span> <span class="pre">x0[:]</span></code>
+if not specified, <code class="docutils literal"><span class="pre">x</span></code> from <code class="docutils literal"><span class="pre">self.pre_processors</span></code> will be used.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="#pyneqsys.symbolic.SymbolicSys" title="pyneqsys.symbolic.SymbolicSys"><code class="xref py py-obj docutils literal"><span class="pre">pyneqsys.symbolic.SymbolicSys</span></code></a></dt>
+<dd>use a CAS (SymPy by default) to derive the jacobian.</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">neqsys</span> <span class="o">=</span> <span class="n">NeqSys</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="p">[(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>                                    <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">neqsys</span><span class="o">.</span><span class="n">solve</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">sol</span><span class="p">[</span><span class="s1">&#39;success&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">[ 0.8411639  0.1588361]</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_series</span></code>(xres,&nbsp;varied_data,&nbsp;varied_idx,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_series_residuals</span></code>(xres,&nbsp;varied_data,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_series_residuals_internal</span></code>(varied_data,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#pyneqsys.core.NeqSys.post_process" title="pyneqsys.core.NeqSys.post_process"><code class="xref py py-obj docutils literal"><span class="pre">post_process</span></code></a>(xout,&nbsp;params_out)</td>
+<td>Used internally for transformation of variables</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#pyneqsys.core.NeqSys.pre_process" title="pyneqsys.core.NeqSys.pre_process"><code class="xref py py-obj docutils literal"><span class="pre">pre_process</span></code></a>(x0[,&nbsp;params])</td>
+<td>Used internally for transformation of variables</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">rms</span></code>(x[,&nbsp;params])</td>
+<td>Returns root means square value of f(x, params)</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#pyneqsys.core.NeqSys.solve" title="pyneqsys.core.NeqSys.solve"><code class="xref py py-obj docutils literal"><span class="pre">solve</span></code></a>(x0[,&nbsp;params,&nbsp;internal_x0,&nbsp;solver,&nbsp;…])</td>
+<td>Solve with <code class="docutils literal"><span class="pre">solver</span></code>.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">solve_and_plot_series</span></code>(x0,&nbsp;params,&nbsp;…[,&nbsp;…])</td>
+<td>Solve and plot for a series of a varied parameter</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">solve_series</span></code>(x0,&nbsp;params,&nbsp;varied_data,&nbsp;varied_idx)</td>
+<td>Solve system for a set of parameters in which one is varied</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyneqsys.core.NeqSys.post_process">
+<code class="descname">post_process</code><span class="sig-paren">(</span><em>xout</em>, <em>params_out</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/core.html#NeqSys.post_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.core.NeqSys.post_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used internally for transformation of variables</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.core.NeqSys.pre_process">
+<code class="descname">pre_process</code><span class="sig-paren">(</span><em>x0</em>, <em>params=()</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/core.html#NeqSys.pre_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.core.NeqSys.pre_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used internally for transformation of variables</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.core.NeqSys.solve">
+<code class="descname">solve</code><span class="sig-paren">(</span><em>x0</em>, <em>params=()</em>, <em>internal_x0=None</em>, <em>solver=None</em>, <em>attached_solver=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/core.html#NeqSys.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.core.NeqSys.solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve with <code class="docutils literal"><span class="pre">solver</span></code>. Convenience method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x0: 1D array of floats</strong></p>
+<blockquote>
+<div><p>Guess (subject to <code class="docutils literal"><span class="pre">self.post_processors</span></code>)</p>
+</div></blockquote>
+<p><strong>params: 1D array_like of floats (default: ())</strong></p>
+<blockquote>
+<div><p>Parameters (subject to <code class="docutils literal"><span class="pre">self.post_processors</span></code>)</p>
+</div></blockquote>
+<p><strong>internal_x0: 1D array of floats (default: None)</strong></p>
+<blockquote>
+<div><p>When given it overrides (processed) <code class="docutils literal"><span class="pre">x0</span></code>. <code class="docutils literal"><span class="pre">internal_x0</span></code> is not
+subject to <code class="docutils literal"><span class="pre">self.post_processors</span></code>.</p>
+</div></blockquote>
+<p><strong>solver: str or callable or None or iterable of such</strong></p>
+<blockquote>
+<div><p>if str: uses _solve_``solver``(*args, **kwargs).
+if <code class="docutils literal"><span class="pre">None</span></code>: chooses from PYNEQSYS_SOLVER environment variable.
+if iterable: chain solving.</p>
+</div></blockquote>
+<p><strong>attached_solver: callable factory</strong></p>
+<blockquote>
+<div><p>invokes: solver = attached_solver(self)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">array:</p>
+<blockquote>
+<div><p>solution vector (post-processed by self.post_processors)</p>
+</div></blockquote>
+<p>dict:</p>
+<blockquote class="last">
+<div><p>info dictionary containing ‘success’, ‘nfev’, ‘njev’ etc.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">neqsys</span> <span class="o">=</span> <span class="n">NeqSys</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">neqsys</span><span class="o">.</span><span class="n">solve</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">solver</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;mpmath&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">sol</span><span class="p">[</span><span class="s1">&#39;success&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">[0.841163901914009663684741869855]</span>
+<span class="go">[0.158836098085990336315258130144]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneqsys.plotting">
+<span id="pyneqsys-plotting-module"></span><h2>pyneqsys.plotting module<a class="headerlink" href="#module-pyneqsys.plotting" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pyneqsys.plotting.mpl_outside_legend">
+<code class="descclassname">pyneqsys.plotting.</code><code class="descname">mpl_outside_legend</code><span class="sig-paren">(</span><em>ax</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/plotting.html#mpl_outside_legend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.plotting.mpl_outside_legend" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pyneqsys.plotting.plot_series">
+<code class="descclassname">pyneqsys.plotting.</code><code class="descname">plot_series</code><span class="sig-paren">(</span><em>xres</em>, <em>varied_data</em>, <em>indices=None</em>, <em>info=None</em>, <em>fail_vline=None</em>, <em>plot_kwargs_cb=None</em>, <em>ls=('-'</em>, <em>'--'</em>, <em>':'</em>, <em>'-.')</em>, <em>c=('k'</em>, <em>'r'</em>, <em>'g'</em>, <em>'b'</em>, <em>'c'</em>, <em>'m'</em>, <em>'y')</em>, <em>labels=None</em>, <em>ax=None</em>, <em>names=None</em>, <em>latex_names=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/plotting.html#plot_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.plotting.plot_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the values of the solution vector vs the varied parameter</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneqsys.solvers">
+<span id="pyneqsys-solvers-module"></span><h2>pyneqsys.solvers module<a class="headerlink" href="#module-pyneqsys.solvers" title="Permalink to this headline">¶</a></h2>
+<p>Currently this module contains a few solvers for demonstration purposes and
+it is not in the scope of pyneqsys to provide “production” solvers,
+but instead be a package for using well established solvers for solving systems
+of equations defined in a uniform (optionally symbolic) way.</p>
+<p>Nevertheless, the solvers provided here may serve as a starting point for
+writing new types of solvers for systems of non-linear equations (with an
+emphasis on a concise API rather than optimal performance).</p>
+<p>Do not rely on any of the classes and functions in this module
+(<code class="docutils literal"><span class="pre">pyneqsys.solvers</span></code>) since they are all to be regarded as provisional,
+i.e. they may be renamed, change behavior and/or signature without any
+prior notice.</p>
+<dl class="class">
+<dt id="pyneqsys.solvers.AutoDampedGradientDescentSolver">
+<em class="property">class </em><code class="descclassname">pyneqsys.solvers.</code><code class="descname">AutoDampedGradientDescentSolver</code><span class="sig-paren">(</span><em>tgt_oscill=0.1</em>, <em>start_damp=0.1</em>, <em>nhistory=4</em>, <em>tgt_pow=0.3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#AutoDampedGradientDescentSolver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.AutoDampedGradientDescentSolver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneqsys.solvers.GradientDescentSolver" title="pyneqsys.solvers.GradientDescentSolver"><code class="xref py py-class docutils literal"><span class="pre">pyneqsys.solvers.GradientDescentSolver</span></code></a></p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">__call__</span></code>(inst)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">alloc</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">cb_factory</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#pyneqsys.solvers.AutoDampedGradientDescentSolver.damping" title="pyneqsys.solvers.AutoDampedGradientDescentSolver.damping"><code class="xref py py-obj docutils literal"><span class="pre">damping</span></code></a>(iter_idx,&nbsp;mx_iter)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">f</span></code>(x)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">j</span></code>(x)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">line_search</span></code>(x,&nbsp;dx[,&nbsp;mxiter,&nbsp;alpha])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">step</span></code>(x,&nbsp;iter_idx,&nbsp;maxiter)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyneqsys.solvers.AutoDampedGradientDescentSolver.damping">
+<code class="descname">damping</code><span class="sig-paren">(</span><em>iter_idx</em>, <em>mx_iter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#AutoDampedGradientDescentSolver.damping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.AutoDampedGradientDescentSolver.damping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyneqsys.solvers.DampedGradientDescentSolver">
+<em class="property">class </em><code class="descclassname">pyneqsys.solvers.</code><code class="descname">DampedGradientDescentSolver</code><span class="sig-paren">(</span><em>base_damp=0.5</em>, <em>exp_damp=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#DampedGradientDescentSolver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.DampedGradientDescentSolver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneqsys.solvers.GradientDescentSolver" title="pyneqsys.solvers.GradientDescentSolver"><code class="xref py py-class docutils literal"><span class="pre">pyneqsys.solvers.GradientDescentSolver</span></code></a></p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">__call__</span></code>(inst)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">alloc</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">cb_factory</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#pyneqsys.solvers.DampedGradientDescentSolver.damping" title="pyneqsys.solvers.DampedGradientDescentSolver.damping"><code class="xref py py-obj docutils literal"><span class="pre">damping</span></code></a>(iter_idx,&nbsp;mx_iter)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">f</span></code>(x)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">j</span></code>(x)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">line_search</span></code>(x,&nbsp;dx[,&nbsp;mxiter,&nbsp;alpha])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">step</span></code>(x,&nbsp;iter_idx,&nbsp;maxiter)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyneqsys.solvers.DampedGradientDescentSolver.damping">
+<code class="descname">damping</code><span class="sig-paren">(</span><em>iter_idx</em>, <em>mx_iter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#DampedGradientDescentSolver.damping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.DampedGradientDescentSolver.damping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyneqsys.solvers.GradientDescentSolver">
+<em class="property">class </em><code class="descclassname">pyneqsys.solvers.</code><code class="descname">GradientDescentSolver</code><a class="reference internal" href="_modules/pyneqsys/solvers.html#GradientDescentSolver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.GradientDescentSolver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneqsys.solvers.SolverBase" title="pyneqsys.solvers.SolverBase"><code class="xref py py-class docutils literal"><span class="pre">pyneqsys.solvers.SolverBase</span></code></a></p>
+<p>Example of a custom solver</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>instance: NeqSys instance (passed by NeqSys.solve)</strong></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Note that this is an inefficient solver for demonstration purposes.</p>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>damping: callback</strong></td>
+<td>with signature f(iter_idx, iter_max) -&gt; float default: lambda idx, mx: exp(-idx/mx)/2</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">__call__</span></code>(inst)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">alloc</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">cb_factory</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#pyneqsys.solvers.GradientDescentSolver.damping" title="pyneqsys.solvers.GradientDescentSolver.damping"><code class="xref py py-obj docutils literal"><span class="pre">damping</span></code></a>(iter_idx,&nbsp;mx_iter)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">f</span></code>(x)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">j</span></code>(x)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">line_search</span></code>(x,&nbsp;dx[,&nbsp;mxiter,&nbsp;alpha])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#pyneqsys.solvers.GradientDescentSolver.step" title="pyneqsys.solvers.GradientDescentSolver.step"><code class="xref py py-obj docutils literal"><span class="pre">step</span></code></a>(x,&nbsp;iter_idx,&nbsp;maxiter)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyneqsys.solvers.GradientDescentSolver.damping">
+<code class="descname">damping</code><span class="sig-paren">(</span><em>iter_idx</em>, <em>mx_iter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#GradientDescentSolver.damping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.GradientDescentSolver.damping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.solvers.GradientDescentSolver.step">
+<code class="descname">step</code><span class="sig-paren">(</span><em>x</em>, <em>iter_idx</em>, <em>maxiter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#GradientDescentSolver.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.GradientDescentSolver.step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyneqsys.solvers.LineSearchingGradientDescentSolver">
+<em class="property">class </em><code class="descclassname">pyneqsys.solvers.</code><code class="descname">LineSearchingGradientDescentSolver</code><a class="reference internal" href="_modules/pyneqsys/solvers.html#LineSearchingGradientDescentSolver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.LineSearchingGradientDescentSolver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneqsys.solvers.SolverBase" title="pyneqsys.solvers.SolverBase"><code class="xref py py-class docutils literal"><span class="pre">pyneqsys.solvers.SolverBase</span></code></a></p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">__call__</span></code>(inst)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">alloc</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">cb_factory</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">f</span></code>(x)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">j</span></code>(x)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">line_search</span></code>(x,&nbsp;dx[,&nbsp;mxiter,&nbsp;alpha])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#pyneqsys.solvers.LineSearchingGradientDescentSolver.step" title="pyneqsys.solvers.LineSearchingGradientDescentSolver.step"><code class="xref py py-obj docutils literal"><span class="pre">step</span></code></a>(x,&nbsp;iter_idx,&nbsp;maxiter)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyneqsys.solvers.LineSearchingGradientDescentSolver.step">
+<code class="descname">step</code><span class="sig-paren">(</span><em>x</em>, <em>iter_idx</em>, <em>maxiter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#LineSearchingGradientDescentSolver.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.LineSearchingGradientDescentSolver.step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyneqsys.solvers.PolakRibiereConjugateGradientSolver">
+<em class="property">class </em><code class="descclassname">pyneqsys.solvers.</code><code class="descname">PolakRibiereConjugateGradientSolver</code><span class="sig-paren">(</span><em>reset_freq=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#PolakRibiereConjugateGradientSolver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.PolakRibiereConjugateGradientSolver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneqsys.solvers.SolverBase" title="pyneqsys.solvers.SolverBase"><code class="xref py py-class docutils literal"><span class="pre">pyneqsys.solvers.SolverBase</span></code></a></p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">__call__</span></code>(inst)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#pyneqsys.solvers.PolakRibiereConjugateGradientSolver.alloc" title="pyneqsys.solvers.PolakRibiereConjugateGradientSolver.alloc"><code class="xref py py-obj docutils literal"><span class="pre">alloc</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">cb_factory</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">f</span></code>(x)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">j</span></code>(x)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">line_search</span></code>(x,&nbsp;dx[,&nbsp;mxiter,&nbsp;alpha])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#pyneqsys.solvers.PolakRibiereConjugateGradientSolver.step" title="pyneqsys.solvers.PolakRibiereConjugateGradientSolver.step"><code class="xref py py-obj docutils literal"><span class="pre">step</span></code></a>(x,&nbsp;iter_idx,&nbsp;maxiter)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyneqsys.solvers.PolakRibiereConjugateGradientSolver.alloc">
+<code class="descname">alloc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#PolakRibiereConjugateGradientSolver.alloc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.PolakRibiereConjugateGradientSolver.alloc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.solvers.PolakRibiereConjugateGradientSolver.step">
+<code class="descname">step</code><span class="sig-paren">(</span><em>x</em>, <em>iter_idx</em>, <em>maxiter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#PolakRibiereConjugateGradientSolver.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.PolakRibiereConjugateGradientSolver.step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyneqsys.solvers.QuorumSolver">
+<em class="property">class </em><code class="descclassname">pyneqsys.solvers.</code><code class="descname">QuorumSolver</code><a class="reference internal" href="_modules/pyneqsys/solvers.html#QuorumSolver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.QuorumSolver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pyneqsys.solvers.SolverBase">
+<em class="property">class </em><code class="descclassname">pyneqsys.solvers.</code><code class="descname">SolverBase</code><a class="reference internal" href="_modules/pyneqsys/solvers.html#SolverBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.SolverBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">__call__</span></code>(inst)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#pyneqsys.solvers.SolverBase.alloc" title="pyneqsys.solvers.SolverBase.alloc"><code class="xref py py-obj docutils literal"><span class="pre">alloc</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#pyneqsys.solvers.SolverBase.cb_factory" title="pyneqsys.solvers.SolverBase.cb_factory"><code class="xref py py-obj docutils literal"><span class="pre">cb_factory</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#pyneqsys.solvers.SolverBase.f" title="pyneqsys.solvers.SolverBase.f"><code class="xref py py-obj docutils literal"><span class="pre">f</span></code></a>(x)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#pyneqsys.solvers.SolverBase.j" title="pyneqsys.solvers.SolverBase.j"><code class="xref py py-obj docutils literal"><span class="pre">j</span></code></a>(x)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#pyneqsys.solvers.SolverBase.line_search" title="pyneqsys.solvers.SolverBase.line_search"><code class="xref py py-obj docutils literal"><span class="pre">line_search</span></code></a>(x,&nbsp;dx[,&nbsp;mxiter,&nbsp;alpha])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#pyneqsys.solvers.SolverBase.step" title="pyneqsys.solvers.SolverBase.step"><code class="xref py py-obj docutils literal"><span class="pre">step</span></code></a>(x)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyneqsys.solvers.SolverBase.alloc">
+<code class="descname">alloc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#SolverBase.alloc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.SolverBase.alloc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.solvers.SolverBase.cb_factory">
+<code class="descname">cb_factory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#SolverBase.cb_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.SolverBase.cb_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.solvers.SolverBase.f">
+<code class="descname">f</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#SolverBase.f"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.SolverBase.f" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.solvers.SolverBase.j">
+<code class="descname">j</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#SolverBase.j"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.SolverBase.j" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.solvers.SolverBase.line_search">
+<code class="descname">line_search</code><span class="sig-paren">(</span><em>x</em>, <em>dx</em>, <em>mxiter=10</em>, <em>alpha=0.0001</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#SolverBase.line_search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.SolverBase.line_search" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.solvers.SolverBase.step">
+<code class="descname">step</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#SolverBase.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.SolverBase.step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pyneqsys.solvers.rms">
+<code class="descclassname">pyneqsys.solvers.</code><code class="descname">rms</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/solvers.html#rms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.solvers.rms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pyneqsys.symbolic">
+<span id="pyneqsys-symbolic-module"></span><h2>pyneqsys.symbolic module<a class="headerlink" href="#module-pyneqsys.symbolic" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneqsys.symbolic.SymbolicSys">
+<em class="property">class </em><code class="descclassname">pyneqsys.symbolic.</code><code class="descname">SymbolicSys</code><span class="sig-paren">(</span><em>x</em>, <em>exprs</em>, <em>params=()</em>, <em>jac=True</em>, <em>backend=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/symbolic.html#SymbolicSys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.symbolic.SymbolicSys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneqsys.core.NeqSys" title="pyneqsys.core.NeqSys"><code class="xref py py-class docutils literal"><span class="pre">pyneqsys.core.NeqSys</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : iterable of Symbols</p>
+<p><strong>exprs</strong> : iterable of expressions for f</p>
+<p><strong>params</strong> : iterable of Symbols (optional)</p>
+<blockquote>
+<div><p>list of symbols appearing in exprs which are parameters</p>
+</div></blockquote>
+<p><strong>jac</strong> : ImmutableMatrix or bool</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>If True:</dt>
+<dd><p class="first last">calculate jacobian from exprs</p>
+</dd>
+<dt>If False:</dt>
+<dd><p class="first last">do not compute jacobian (numeric approximation)</p>
+</dd>
+<dt>If ImmutableMatrix:</dt>
+<dd><p class="first last">user provided expressions for the jacobian</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>backend</strong> : str or sym.Backend</p>
+<blockquote>
+<div><p>See documentation of <a class="reference external" href="https://pythonhosted.org/sym/sym.html#sym.backend.Backend">sym.Backend</a>.</p>
+</div></blockquote>
+<p><strong>module</strong> : str</p>
+<blockquote>
+<div><p><code class="docutils literal"><span class="pre">module</span></code> keyword argument passed to <code class="docutils literal"><span class="pre">backend.Lambdify</span></code>.</p>
+</div></blockquote>
+<p><strong>**kwargs:</strong></p>
+<blockquote class="last">
+<div><p>See <a class="reference internal" href="#pyneqsys.core.NeqSys" title="pyneqsys.core.NeqSys"><code class="xref py py-class docutils literal"><span class="pre">pyneqsys.core.NeqSys</span></code></a></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>When using SymPy as backend a limited number of unknowns is supported.
+The reason is that (currently) <code class="docutils literal"><span class="pre">sympy.lambdify</span></code> has an upper limit on
+number of arguments.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sympy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">exp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;x:2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">params</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;a b&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">neqsys</span> <span class="o">=</span> <span class="n">SymbolicSys</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">[</span><span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x0</span><span class="p">),</span> <span class="n">b</span><span class="o">*</span><span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span><span class="o">**</span><span class="mi">2</span><span class="p">)],</span> <span class="n">params</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xout</span><span class="p">,</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">neqsys</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="s1">&#39;scipy&#39;</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">xout</span><span class="p">)</span>
+<span class="go">[ 1.  1.]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">neqsys</span><span class="o">.</span><span class="n">get_jac</span><span class="p">()[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="go">-a</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#pyneqsys.symbolic.SymbolicSys.from_callback" title="pyneqsys.symbolic.SymbolicSys.from_callback"><code class="xref py py-obj docutils literal"><span class="pre">from_callback</span></code></a>(cb[,&nbsp;nx,&nbsp;nparams])</td>
+<td>Generate a SymbolicSys instance from a callback</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#pyneqsys.symbolic.SymbolicSys.get_jac" title="pyneqsys.symbolic.SymbolicSys.get_jac"><code class="xref py py-obj docutils literal"><span class="pre">get_jac</span></code></a>()</td>
+<td>Return the jacobian of the expressions</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_series</span></code>(xres,&nbsp;varied_data,&nbsp;varied_idx,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_series_residuals</span></code>(xres,&nbsp;varied_data,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_series_residuals_internal</span></code>(varied_data,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">post_process</span></code>(xout,&nbsp;params_out)</td>
+<td>Used internally for transformation of variables</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">pre_process</span></code>(x0[,&nbsp;params])</td>
+<td>Used internally for transformation of variables</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">rms</span></code>(x[,&nbsp;params])</td>
+<td>Returns root means square value of f(x, params)</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">solve</span></code>(x0[,&nbsp;params,&nbsp;internal_x0,&nbsp;solver,&nbsp;…])</td>
+<td>Solve with <code class="docutils literal"><span class="pre">solver</span></code>.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">solve_and_plot_series</span></code>(x0,&nbsp;params,&nbsp;…[,&nbsp;…])</td>
+<td>Solve and plot for a series of a varied parameter</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">solve_series</span></code>(x0,&nbsp;params,&nbsp;varied_data,&nbsp;varied_idx)</td>
+<td>Solve system for a set of parameters in which one is varied</td>
+</tr>
+</tbody>
+</table>
+<dl class="classmethod">
+<dt id="pyneqsys.symbolic.SymbolicSys.from_callback">
+<em class="property">classmethod </em><code class="descname">from_callback</code><span class="sig-paren">(</span><em>cb</em>, <em>nx=None</em>, <em>nparams=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/symbolic.html#SymbolicSys.from_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.symbolic.SymbolicSys.from_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a SymbolicSys instance from a callback</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneqsys.symbolic.SymbolicSys.get_jac">
+<code class="descname">get_jac</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/symbolic.html#SymbolicSys.get_jac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.symbolic.SymbolicSys.get_jac" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the jacobian of the expressions</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyneqsys.symbolic.TransformedSys">
+<em class="property">class </em><code class="descclassname">pyneqsys.symbolic.</code><code class="descname">TransformedSys</code><span class="sig-paren">(</span><em>x</em>, <em>exprs</em>, <em>transf</em>, <em>params=()</em>, <em>post_adj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/symbolic.html#TransformedSys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.symbolic.TransformedSys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneqsys.symbolic.SymbolicSys" title="pyneqsys.symbolic.SymbolicSys"><code class="xref py py-class docutils literal"><span class="pre">pyneqsys.symbolic.SymbolicSys</span></code></a></p>
+<p>A system which transforms the equations and variables internally</p>
+<p>Can be used to reformulate a problem in a numerically more stable form.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : iterable of variables</p>
+<p><strong>exprs</strong> : iterable of expressions</p>
+<blockquote>
+<div><p>Expressions to find root for (untransformed).</p>
+</div></blockquote>
+<p><strong>transf</strong> : iterable of pairs of expressions</p>
+<blockquote>
+<div><p>Forward, backward transformed instances of x.</p>
+</div></blockquote>
+<p><strong>params</strong> : iterable of symbols</p>
+<p><strong>post_adj</strong> : callable (default: None)</p>
+<blockquote>
+<div><p>To tweak expression after transformation.</p>
+</div></blockquote>
+<p><strong>**kwargs :</strong></p>
+<blockquote class="last">
+<div><p>Keyword arguments passed onto <a class="reference internal" href="#pyneqsys.symbolic.SymbolicSys" title="pyneqsys.symbolic.SymbolicSys"><code class="xref py py-class docutils literal"><span class="pre">SymbolicSys</span></code></a>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#pyneqsys.symbolic.TransformedSys.from_callback" title="pyneqsys.symbolic.TransformedSys.from_callback"><code class="xref py py-obj docutils literal"><span class="pre">from_callback</span></code></a>(cb,&nbsp;transf_cbs,&nbsp;nx[,&nbsp;nparams,&nbsp;…])</td>
+<td>Generate a TransformedSys instance from a callback</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_jac</span></code>()</td>
+<td>Return the jacobian of the expressions</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_series</span></code>(xres,&nbsp;varied_data,&nbsp;varied_idx,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_series_residuals</span></code>(xres,&nbsp;varied_data,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_series_residuals_internal</span></code>(varied_data,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">post_process</span></code>(xout,&nbsp;params_out)</td>
+<td>Used internally for transformation of variables</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">pre_process</span></code>(x0[,&nbsp;params])</td>
+<td>Used internally for transformation of variables</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">rms</span></code>(x[,&nbsp;params])</td>
+<td>Returns root means square value of f(x, params)</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">solve</span></code>(x0[,&nbsp;params,&nbsp;internal_x0,&nbsp;solver,&nbsp;…])</td>
+<td>Solve with <code class="docutils literal"><span class="pre">solver</span></code>.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">solve_and_plot_series</span></code>(x0,&nbsp;params,&nbsp;…[,&nbsp;…])</td>
+<td>Solve and plot for a series of a varied parameter</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">solve_series</span></code>(x0,&nbsp;params,&nbsp;varied_data,&nbsp;varied_idx)</td>
+<td>Solve system for a set of parameters in which one is varied</td>
+</tr>
+</tbody>
+</table>
+<dl class="classmethod">
+<dt id="pyneqsys.symbolic.TransformedSys.from_callback">
+<em class="property">classmethod </em><code class="descname">from_callback</code><span class="sig-paren">(</span><em>cb</em>, <em>transf_cbs</em>, <em>nx</em>, <em>nparams=0</em>, <em>pre_adj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/symbolic.html#TransformedSys.from_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.symbolic.TransformedSys.from_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a TransformedSys instance from a callback</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>cb</strong> : callable</p>
+<p><strong>transf_cbs</strong> : pair or iterable of pairs of callables</p>
+<p><strong>nx</strong> : int</p>
+<p><strong>nparams</strong> : int</p>
+<p><strong>pre_adj</strong> : callable</p>
+<p class="last"><strong>**kwargs</strong> : passed onto TransformedSys</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pyneqsys.symbolic.linear_exprs">
+<code class="descclassname">pyneqsys.symbolic.</code><code class="descname">linear_exprs</code><span class="sig-paren">(</span><em>A</em>, <em>x</em>, <em>b=None</em>, <em>rref=False</em>, <em>Matrix=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/symbolic.html#linear_exprs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.symbolic.linear_exprs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns Ax - b</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>A</strong> : matrix_like of numbers</p>
+<blockquote>
+<div><p>Of shape (len(b), len(x)).</p>
+</div></blockquote>
+<p><strong>x</strong> : iterable of symbols</p>
+<p><strong>b</strong> : array_like of numbers (default: None)</p>
+<blockquote>
+<div><p>When <code class="docutils literal"><span class="pre">None</span></code>, assume zeros of length <code class="docutils literal"><span class="pre">len(x)</span></code>.</p>
+</div></blockquote>
+<p><strong>Matrix</strong> : class</p>
+<blockquote>
+<div><p>When <code class="docutils literal"><span class="pre">rref</span> <span class="pre">==</span> <span class="pre">True</span></code>: A matrix class which supports slicing,
+and methods <code class="docutils literal"><span class="pre">dot</span></code> and <code class="docutils literal"><span class="pre">rref</span></code>. Defaults to <code class="docutils literal"><span class="pre">sympy.Matrix</span></code>.</p>
+</div></blockquote>
+<p><strong>rref</strong> : bool</p>
+<blockquote>
+<div><p>Calculate the reduced row echelon form of (A | -b).</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of the elements in the resulting column vector.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyneqsys.symbolic.linear_rref">
+<code class="descclassname">pyneqsys.symbolic.</code><code class="descname">linear_rref</code><span class="sig-paren">(</span><em>A</em>, <em>b</em>, <em>Matrix=None</em>, <em>S=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyneqsys/symbolic.html#linear_rref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneqsys.symbolic.linear_rref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform a linear system to reduced row-echelon form</p>
+<p>Transforms both the matrix and right-hand side of a linear
+system of equations to reduced row echelon form</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>A</strong> : Matrix-like</p>
+<blockquote>
+<div><p>Iterable of rows.</p>
+</div></blockquote>
+<p><strong>b</strong> : iterable</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A’, b’ - transformed versions</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Welcome to pyneqsys’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Bjoern I. Dahlgren &lt;bjodah@gmail.com&gt;.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.5.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

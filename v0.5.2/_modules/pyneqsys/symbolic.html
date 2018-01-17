@@ -1,0 +1,514 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyneqsys.symbolic &mdash; pyneqsys 0.5.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="pyneqsys 0.5.2 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> pyneqsys
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyneqsys.html">pyneqsys package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pyneqsys</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyneqsys.symbolic</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyneqsys.symbolic</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">chain</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sym</span> <span class="k">import</span> <span class="n">Backend</span>
+<span class="kn">from</span> <span class="nn">sym.util</span> <span class="k">import</span> <span class="n">banded_jacobian</span><span class="p">,</span> <span class="n">check_transforms</span>
+
+<span class="kn">from</span> <span class="nn">.core</span> <span class="k">import</span> <span class="n">NeqSys</span><span class="p">,</span> <span class="n">_ensure_3args</span>
+
+
+<span class="k">def</span> <span class="nf">_map2</span><span class="p">(</span><span class="n">cb</span><span class="p">,</span> <span class="n">iterable</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">cb</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># identity function is assumed</span>
+        <span class="k">return</span> <span class="n">iterable</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="n">cb</span><span class="p">,</span> <span class="n">iterable</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_map2l</span><span class="p">(</span><span class="n">cb</span><span class="p">,</span> <span class="n">iterable</span><span class="p">):</span>  <span class="c1"># Py2 type of map in Py3</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">_map2</span><span class="p">(</span><span class="n">cb</span><span class="p">,</span> <span class="n">iterable</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="SymbolicSys"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.symbolic.SymbolicSys">[docs]</a><span class="k">class</span> <span class="nc">SymbolicSys</span><span class="p">(</span><span class="n">NeqSys</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : iterable of Symbols</span>
+<span class="sd">    exprs : iterable of expressions for f</span>
+<span class="sd">    params : iterable of Symbols (optional)</span>
+<span class="sd">        list of symbols appearing in exprs which are parameters</span>
+<span class="sd">    jac : ImmutableMatrix or bool</span>
+<span class="sd">        If True:</span>
+<span class="sd">            calculate jacobian from exprs</span>
+<span class="sd">        If False:</span>
+<span class="sd">            do not compute jacobian (numeric approximation)</span>
+<span class="sd">        If ImmutableMatrix:</span>
+<span class="sd">            user provided expressions for the jacobian</span>
+<span class="sd">    backend : str or sym.Backend</span>
+<span class="sd">        See documentation of `sym.Backend \</span>
+<span class="sd">&lt;https://pythonhosted.org/sym/sym.html#sym.backend.Backend&gt;`_.</span>
+<span class="sd">    module : str</span>
+<span class="sd">        ``module`` keyword argument passed to ``backend.Lambdify``.</span>
+<span class="sd">    \*\*kwargs:</span>
+<span class="sd">        See :py:class:`pyneqsys.core.NeqSys`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import sympy as sp</span>
+<span class="sd">    &gt;&gt;&gt; e = sp.exp</span>
+<span class="sd">    &gt;&gt;&gt; x = x0, x1 = sp.symbols(&#39;x:2&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; params = a, b = sp.symbols(&#39;a b&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; neqsys = SymbolicSys(x, [a*(1 - x0), b*(x1 - x0**2)], params)</span>
+<span class="sd">    &gt;&gt;&gt; xout, sol = neqsys.solve(&#39;scipy&#39;, [-10, -5], [1, 10])</span>
+<span class="sd">    &gt;&gt;&gt; print(xout)</span>
+<span class="sd">    [ 1.  1.]</span>
+<span class="sd">    &gt;&gt;&gt; print(neqsys.get_jac()[0, 0])</span>
+<span class="sd">    -a</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    When using SymPy as backend a limited number of unknowns is supported.</span>
+<span class="sd">    The reason is that (currently) ``sympy.lambdify`` has an upper limit on</span>
+<span class="sd">    number of arguments.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">exprs</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">jac</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exprs</span> <span class="o">=</span> <span class="n">exprs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_jac</span> <span class="o">=</span> <span class="n">jac</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">be</span> <span class="o">=</span> <span class="n">Backend</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">exprs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># needed by get_*_cb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">band</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;band&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># needed by get_*_cb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">,</span> <span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SymbolicSys</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">,</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">_get_f_cb</span><span class="p">(),</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">_get_j_cb</span><span class="p">(),</span>
+                                          <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SymbolicSys.from_callback"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.symbolic.SymbolicSys.from_callback">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_callback</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cb</span><span class="p">,</span> <span class="n">nx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nparams</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Generate a SymbolicSys instance from a callback&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;x_by_name&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;names&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Need ``names`` in kwargs.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">nx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;names&#39;</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">nx</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;names&#39;</span><span class="p">]):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Inconsistency between nx and length of ``names``.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;par_by_name&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;param_names&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Need ``param_names`` in kwargs.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nparams</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">nparams</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;param_names&#39;</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">nparams</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;param_names&#39;</span><span class="p">]):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Inconsistency between ``nparam`` and length of ``param_names``.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">nparams</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">nparams</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="n">nx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Need ``nx`` of ``names`` together with ``x_by_name==True``.&quot;</span><span class="p">)</span>
+        <span class="n">be</span> <span class="o">=</span> <span class="n">Backend</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;backend&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">be</span><span class="o">.</span><span class="n">real_symarray</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">be</span><span class="o">.</span><span class="n">real_symarray</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="n">nparams</span><span class="p">)</span>
+        <span class="n">_x</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;names&#39;</span><span class="p">],</span> <span class="n">x</span><span class="p">))</span> <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;x_by_name&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span>
+        <span class="n">_p</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;param_names&#39;</span><span class="p">],</span> <span class="n">p</span><span class="p">))</span> <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;par_by_name&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="n">p</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">exprs</span> <span class="o">=</span> <span class="n">cb</span><span class="p">(</span><span class="n">_x</span><span class="p">,</span> <span class="n">_p</span><span class="p">,</span> <span class="n">be</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">exprs</span> <span class="o">=</span> <span class="n">_ensure_3args</span><span class="p">(</span><span class="n">cb</span><span class="p">)(</span><span class="n">_x</span><span class="p">,</span> <span class="n">_p</span><span class="p">,</span> <span class="n">be</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">exprs</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">be</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SymbolicSys.get_jac"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.symbolic.SymbolicSys.get_jac">[docs]</a>    <span class="k">def</span> <span class="nf">get_jac</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the jacobian of the expressions &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jac</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">band</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">be</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nf</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exprs</span><span class="p">)</span>
+                <span class="n">_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">be</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">_x</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Banded</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">be</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="n">banded_jacobian</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">exprs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">band</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jac</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jac</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_f_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">))</span>
+        <span class="n">kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;mpmath&#39;</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">be</span><span class="o">.</span><span class="n">Lambdify</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exprs</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">be</span><span class="o">.</span><span class="n">Lambdify</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exprs</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">cb</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">f</span>
+
+    <span class="k">def</span> <span class="nf">_get_j_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">))</span>
+        <span class="n">kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;mpmath&#39;</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">be</span><span class="o">.</span><span class="n">Lambdify</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_jac</span><span class="p">(),</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">be</span><span class="o">.</span><span class="n">Lambdify</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_jac</span><span class="p">())</span>
+
+        <span class="k">def</span> <span class="nf">j</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">cb</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">j</span>
+
+    <span class="n">_use_symbol_latex_names</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_repr_latex_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pretty printing in Jupyter notebook</span>
+        <span class="kn">from</span> <span class="nn">._sympy</span> <span class="k">import</span> <span class="n">NeqSysTexPrinter</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">latex_names</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">latex_param_names</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span> <span class="k">else</span> <span class="kc">True</span><span class="p">):</span>
+            <span class="n">pretty</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">:</span> <span class="n">n</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">(</span>
+                <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">latex_names</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_symbol_latex_names</span> <span class="k">else</span> <span class="p">[],</span>
+                <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">latex_param_names</span><span class="p">)</span>
+            <span class="p">)}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pretty</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">return</span> <span class="s1">&#39;$</span><span class="si">%s</span><span class="s1">$&#39;</span> <span class="o">%</span> <span class="n">NeqSysTexPrinter</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">symbol_names</span><span class="o">=</span><span class="n">pretty</span><span class="p">))</span><span class="o">.</span><span class="n">doprint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exprs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TransformedSys"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.symbolic.TransformedSys">[docs]</a><span class="k">class</span> <span class="nc">TransformedSys</span><span class="p">(</span><span class="n">SymbolicSys</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A system which transforms the equations and variables internally</span>
+
+<span class="sd">    Can be used to reformulate a problem in a numerically more stable form.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : iterable of variables</span>
+<span class="sd">    exprs : iterable of expressions</span>
+<span class="sd">         Expressions to find root for (untransformed).</span>
+<span class="sd">    transf : iterable of pairs of expressions</span>
+<span class="sd">        Forward, backward transformed instances of x.</span>
+<span class="sd">    params : iterable of symbols</span>
+<span class="sd">    post_adj : callable (default: None)</span>
+<span class="sd">        To tweak expression after transformation.</span>
+<span class="sd">    \\*\\*kwargs :</span>
+<span class="sd">        Keyword arguments passed onto :class:`SymbolicSys`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_use_symbol_latex_names</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># symbols have been transformed</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">exprs</span><span class="p">,</span> <span class="n">transf</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">post_adj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">transf</span><span class="p">)</span>
+        <span class="n">check_transforms</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">exprs</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fw</span><span class="p">))</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">exprs</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TransformedSys</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">_map2l</span><span class="p">(</span><span class="n">post_adj</span><span class="p">,</span> <span class="n">exprs</span><span class="p">),</span> <span class="n">params</span><span class="p">,</span>
+            <span class="n">pre_processors</span><span class="o">=</span><span class="p">[</span><span class="k">lambda</span> <span class="n">xarr</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bw_cb</span><span class="p">(</span><span class="n">xarr</span><span class="p">),</span> <span class="n">params</span><span class="p">)],</span>
+            <span class="n">post_processors</span><span class="o">=</span><span class="p">[</span><span class="k">lambda</span> <span class="n">xarr</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fw_cb</span><span class="p">(</span><span class="n">xarr</span><span class="p">),</span> <span class="n">params</span><span class="p">)],</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fw_cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">be</span><span class="o">.</span><span class="n">Lambdify</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bw_cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">be</span><span class="o">.</span><span class="n">Lambdify</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TransformedSys.from_callback"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.symbolic.TransformedSys.from_callback">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_callback</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cb</span><span class="p">,</span> <span class="n">transf_cbs</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">nparams</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pre_adj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Generate a TransformedSys instance from a callback</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cb : callable</span>
+<span class="sd">        transf_cbs : pair or iterable of pairs of callables</span>
+<span class="sd">        nx : int</span>
+<span class="sd">        nparams : int</span>
+<span class="sd">        pre_adj : callable</span>
+<span class="sd">        \\*\\*kwargs : passed onto TransformedSys</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">be</span> <span class="o">=</span> <span class="n">Backend</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;backend&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">be</span><span class="o">.</span><span class="n">real_symarray</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">be</span><span class="o">.</span><span class="n">real_symarray</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="n">nparams</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">transf</span> <span class="o">=</span> <span class="p">[(</span><span class="n">transf_cbs</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">0</span><span class="p">](</span><span class="n">xi</span><span class="p">),</span>
+                       <span class="n">transf_cbs</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">1</span><span class="p">](</span><span class="n">xi</span><span class="p">))</span>
+                      <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">xi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">transf</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_map2</span><span class="p">(</span><span class="n">transf_cbs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">),</span> <span class="n">_map2</span><span class="p">(</span><span class="n">transf_cbs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">exprs</span> <span class="o">=</span> <span class="n">cb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">be</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">exprs</span> <span class="o">=</span> <span class="n">_ensure_3args</span><span class="p">(</span><span class="n">cb</span><span class="p">)(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">be</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">_map2l</span><span class="p">(</span><span class="n">pre_adj</span><span class="p">,</span> <span class="n">exprs</span><span class="p">),</span> <span class="n">transf</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">be</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="linear_rref"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.symbolic.linear_rref">[docs]</a><span class="k">def</span> <span class="nf">linear_rref</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">Matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Transform a linear system to reduced row-echelon form</span>
+
+<span class="sd">    Transforms both the matrix and right-hand side of a linear</span>
+<span class="sd">    system of equations to reduced row echelon form</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : Matrix-like</span>
+<span class="sd">        Iterable of rows.</span>
+<span class="sd">    b : iterable</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A&#39;, b&#39; - transformed versions</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">Matrix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">Matrix</span>
+    <span class="k">if</span> <span class="n">S</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">S</span>
+    <span class="n">mat_rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">_map2l</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">)]</span>
+    <span class="n">aug</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">(</span><span class="n">mat_rows</span><span class="p">)</span>
+    <span class="n">raug</span><span class="p">,</span> <span class="n">pivot</span> <span class="o">=</span> <span class="n">aug</span><span class="o">.</span><span class="n">rref</span><span class="p">()</span>
+    <span class="n">nindep</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pivot</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">raug</span><span class="p">[:</span><span class="n">nindep</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">raug</span><span class="p">[:</span><span class="n">nindep</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="linear_exprs"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.symbolic.linear_exprs">[docs]</a><span class="k">def</span> <span class="nf">linear_exprs</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rref</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns Ax - b</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : matrix_like of numbers</span>
+<span class="sd">        Of shape (len(b), len(x)).</span>
+<span class="sd">    x : iterable of symbols</span>
+<span class="sd">    b : array_like of numbers (default: None)</span>
+<span class="sd">        When ``None``, assume zeros of length ``len(x)``.</span>
+<span class="sd">    Matrix : class</span>
+<span class="sd">        When ``rref == True``: A matrix class which supports slicing,</span>
+<span class="sd">        and methods ``dot`` and ``rref``. Defaults to ``sympy.Matrix``.</span>
+<span class="sd">    rref : bool</span>
+<span class="sd">        Calculate the reduced row echelon form of (A | -b).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A list of the elements in the resulting column vector.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rref</span><span class="p">:</span>
+        <span class="n">rA</span><span class="p">,</span> <span class="n">rb</span> <span class="o">=</span> <span class="n">linear_rref</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">Matrix</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">lhs</span> <span class="o">-</span> <span class="n">rhs</span> <span class="k">for</span> <span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">rA</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">rb</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">sum</span><span class="p">([</span><span class="n">x0</span><span class="o">*</span><span class="n">x1</span> <span class="k">for</span> <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">x</span><span class="p">)])</span> <span class="o">-</span> <span class="n">v</span>
+                <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">)]</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Bjoern I. Dahlgren &lt;bjodah@gmail.com&gt;.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.5.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

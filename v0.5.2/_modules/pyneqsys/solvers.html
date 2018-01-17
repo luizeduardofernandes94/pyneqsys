@@ -1,0 +1,421 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pyneqsys.solvers &mdash; pyneqsys 0.5.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="pyneqsys 0.5.2 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> pyneqsys
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pyneqsys.html">pyneqsys package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pyneqsys</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>pyneqsys.solvers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pyneqsys.solvers</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Currently this module contains a few solvers for demonstration purposes and</span>
+<span class="sd">it is not in the scope of pyneqsys to provide &quot;production&quot; solvers,</span>
+<span class="sd">but instead be a package for using well established solvers for solving systems</span>
+<span class="sd">of equations defined in a uniform (optionally symbolic) way.</span>
+
+<span class="sd">Nevertheless, the solvers provided here may serve as a starting point for</span>
+<span class="sd">writing new types of solvers for systems of non-linear equations (with an</span>
+<span class="sd">emphasis on a concise API rather than optimal performance).</span>
+
+<span class="sd">Do not rely on any of the classes and functions in this module</span>
+<span class="sd">(``pyneqsys.solvers``) since they are all to be regarded as provisional,</span>
+<span class="sd">i.e. they may be renamed, change behavior and/or signature without any</span>
+<span class="sd">prior notice.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="p">(</span><span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="rms"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.rms">[docs]</a><span class="k">def</span> <span class="nf">rms</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="SolverBase"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.SolverBase">[docs]</a><span class="k">class</span> <span class="nc">SolverBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SolverBase.alloc"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.SolverBase.alloc">[docs]</a>    <span class="k">def</span> <span class="nf">alloc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nfev</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">njev</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_x</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_dx</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_f</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_rms_f</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="SolverBase.step"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.SolverBase.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="SolverBase.f"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.SolverBase.f">[docs]</a>    <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nfev</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">f_cb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">internal_params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SolverBase.j"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.SolverBase.j">[docs]</a>    <span class="k">def</span> <span class="nf">j</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">njev</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">j_cb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">internal_params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SolverBase.cb_factory"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.SolverBase.cb_factory">[docs]</a>    <span class="k">def</span> <span class="nf">cb_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">cb</span><span class="p">(</span><span class="n">intern_x0</span><span class="p">,</span> <span class="n">steptol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">ftol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ftol</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+                <span class="n">ftol</span> <span class="o">=</span> <span class="n">ftol</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">intern_x0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">steptol</span> <span class="o">=</span> <span class="n">steptol</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ftol</span> <span class="o">=</span> <span class="n">ftol</span>
+            <span class="n">cur_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">intern_x0</span><span class="p">)</span>
+            <span class="n">iter_idx</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">history_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cur_x</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+            <span class="k">while</span> <span class="n">iter_idx</span> <span class="o">&lt;</span> <span class="n">maxiter</span><span class="p">:</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">cur_x</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history_f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="n">rms_f</span> <span class="o">=</span> <span class="n">rms</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history_rms_f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rms_f</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">history_dx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">cur_x</span><span class="p">,</span> <span class="n">iter_idx</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">))</span>
+                <span class="n">cur_x</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_dx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cur_x</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+                <span class="n">iter_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">ftol</span><span class="p">):</span>
+                    <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">cur_x</span><span class="p">,</span> <span class="s1">&#39;success&#39;</span><span class="p">:</span> <span class="n">success</span><span class="p">,</span> <span class="s1">&#39;nit&#39;</span><span class="p">:</span> <span class="n">iter_idx</span><span class="p">,</span>
+                    <span class="s1">&#39;nfev&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfev</span><span class="p">,</span> <span class="s1">&#39;njev&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">njev</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alloc</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">cb</span></div>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="n">inst</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cb_factory</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cb</span>
+
+    <span class="k">def</span> <span class="nf">_gd_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">j</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_j</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history_f</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+<div class="viewcode-block" id="SolverBase.line_search"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.SolverBase.line_search">[docs]</a>    <span class="k">def</span> <span class="nf">line_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">mxiter</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">):</span>
+        <span class="c1"># Goldstein-Armijo linesearch (backtracking)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">lmb</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">while</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="n">mxiter</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">lmb</span><span class="o">*</span><span class="n">dx</span><span class="p">)</span>
+            <span class="n">rms_f</span> <span class="o">=</span> <span class="n">rms</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">rms_cmp</span> <span class="o">=</span> <span class="n">rms</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history_f</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">alpha</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_j</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">lmb</span><span class="o">*</span><span class="n">dx</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">rms_f</span> <span class="o">&lt;=</span> <span class="n">rms_cmp</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">lmb</span><span class="o">*</span><span class="n">dx</span>
+            <span class="n">lmb</span> <span class="o">/=</span> <span class="mi">2</span>
+            <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">lmb</span><span class="o">*</span><span class="n">dx</span></div></div>
+
+
+<div class="viewcode-block" id="GradientDescentSolver"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.GradientDescentSolver">[docs]</a><span class="k">class</span> <span class="nc">GradientDescentSolver</span><span class="p">(</span><span class="n">SolverBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Example of a custom solver</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    instance: NeqSys instance (passed by NeqSys.solve)</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    damping: callback</span>
+<span class="sd">        with signature f(iter_idx, iter_max) -&gt; float</span>
+<span class="sd">        default: lambda idx, mx: exp(-idx/mx)/2</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Note that this is an inefficient solver for demonstration purposes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GradientDescentSolver.damping"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.GradientDescentSolver.damping">[docs]</a>    <span class="k">def</span> <span class="nf">damping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iter_idx</span><span class="p">,</span> <span class="n">mx_iter</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">1.0</span></div>
+
+<div class="viewcode-block" id="GradientDescentSolver.step"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.GradientDescentSolver.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">iter_idx</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">damping</span><span class="p">(</span><span class="n">iter_idx</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gd_step</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="LineSearchingGradientDescentSolver"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.LineSearchingGradientDescentSolver">[docs]</a><span class="k">class</span> <span class="nc">LineSearchingGradientDescentSolver</span><span class="p">(</span><span class="n">SolverBase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="LineSearchingGradientDescentSolver.step"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.LineSearchingGradientDescentSolver.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">iter_idx</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_search</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gd_step</span><span class="p">(</span><span class="n">x</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="PolakRibiereConjugateGradientSolver"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.PolakRibiereConjugateGradientSolver">[docs]</a><span class="k">class</span> <span class="nc">PolakRibiereConjugateGradientSolver</span><span class="p">(</span><span class="n">SolverBase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset_freq</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_freq</span> <span class="o">=</span> <span class="n">reset_freq</span>
+
+<div class="viewcode-block" id="PolakRibiereConjugateGradientSolver.alloc"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.PolakRibiereConjugateGradientSolver.alloc">[docs]</a>    <span class="k">def</span> <span class="nf">alloc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_a</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># for curiosity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_Bn</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># for curiosity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_sn</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PolakRibiereConjugateGradientSolver</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">alloc</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PolakRibiereConjugateGradientSolver.step"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.PolakRibiereConjugateGradientSolver.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">iter_idx</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">):</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_dx</span>
+        <span class="n">sn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_sn</span>
+        <span class="k">if</span> <span class="n">iter_idx</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">iter_idx</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_freq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">dxn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_search</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gd_step</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+            <span class="n">sn</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dx0</span> <span class="o">=</span> <span class="n">dx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">dx1</span> <span class="o">=</span> <span class="n">dx</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">ddx01</span> <span class="o">=</span> <span class="n">dx0</span> <span class="o">-</span> <span class="n">dx1</span>
+            <span class="n">Bn</span> <span class="o">=</span> <span class="n">dx0</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">ddx01</span><span class="p">)</span><span class="o">/</span><span class="n">dx1</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dx1</span><span class="p">)</span>
+            <span class="c1"># print(Bn_suggest)</span>
+            <span class="c1"># Bn = max(0, Bn_suggest)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">history_Bn</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Bn</span><span class="p">)</span>  <span class="c1"># for curiosity</span>
+            <span class="n">sn</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">Bn</span><span class="o">*</span><span class="n">sn</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_search</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sn</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">history_a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>  <span class="c1"># for curiosity</span>
+            <span class="n">dxn</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="n">sn</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">dxn</span></div></div>
+
+
+<div class="viewcode-block" id="DampedGradientDescentSolver"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.DampedGradientDescentSolver">[docs]</a><span class="k">class</span> <span class="nc">DampedGradientDescentSolver</span><span class="p">(</span><span class="n">GradientDescentSolver</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_damp</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">exp_damp</span><span class="o">=.</span><span class="mi">5</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_damp</span> <span class="o">=</span> <span class="n">base_damp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exp_damp</span> <span class="o">=</span> <span class="n">exp_damp</span>
+
+<div class="viewcode-block" id="DampedGradientDescentSolver.damping"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.DampedGradientDescentSolver.damping">[docs]</a>    <span class="k">def</span> <span class="nf">damping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iter_idx</span><span class="p">,</span> <span class="n">mx_iter</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">math</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_damp</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">iter_idx</span><span class="o">/</span><span class="n">mx_iter</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp_damp</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="AutoDampedGradientDescentSolver"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.AutoDampedGradientDescentSolver">[docs]</a><span class="k">class</span> <span class="nc">AutoDampedGradientDescentSolver</span><span class="p">(</span><span class="n">GradientDescentSolver</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tgt_oscill</span><span class="o">=.</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_damp</span><span class="o">=.</span><span class="mi">1</span><span class="p">,</span> <span class="n">nhistory</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">tgt_pow</span><span class="o">=.</span><span class="mi">3</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tgt_oscill</span> <span class="o">=</span> <span class="n">tgt_oscill</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_damp</span> <span class="o">=</span> <span class="n">start_damp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nhistory</span> <span class="o">=</span> <span class="n">nhistory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tgt_pow</span> <span class="o">=</span> <span class="n">tgt_pow</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_damping</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="AutoDampedGradientDescentSolver.damping"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.AutoDampedGradientDescentSolver.damping">[docs]</a>    <span class="k">def</span> <span class="nf">damping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iter_idx</span><span class="p">,</span> <span class="n">mx_iter</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">iter_idx</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nhistory</span><span class="p">:</span>
+            <span class="n">hist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_rms_f</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">nhistory</span><span class="p">:]</span>
+            <span class="n">avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">hist</span><span class="p">)</span>
+            <span class="n">even</span> <span class="o">=</span> <span class="n">hist</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">odd</span> <span class="o">=</span> <span class="n">hist</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">signed_metric</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">even</span><span class="o">-</span><span class="n">avg</span><span class="p">)</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">odd</span><span class="o">-</span><span class="n">avg</span><span class="p">)</span>
+            <span class="n">oscillatory_metric</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">signed_metric</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">avg</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nhistory</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cur_damp</span> <span class="o">*=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tgt_oscill</span><span class="o">/</span><span class="n">oscillatory_metric</span><span class="p">)</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">tgt_pow</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_damping</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_damp</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_damp</span></div></div>
+
+
+<div class="viewcode-block" id="QuorumSolver"><a class="viewcode-back" href="../../pyneqsys.html#pyneqsys.solvers.QuorumSolver">[docs]</a><span class="k">class</span> <span class="nc">QuorumSolver</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Bjoern I. Dahlgren &lt;bjodah@gmail.com&gt;.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.5.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
